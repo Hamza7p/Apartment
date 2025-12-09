@@ -1,0 +1,15 @@
+<?php
+
+namespace App\Http\Services;
+
+use App\Models\{{name}};
+use App\Http\Services\Base\CrudService;
+
+
+class {{name}}Service extends CrudService
+{
+    protected function getModelClass(): string
+        {
+            return {{name}}::class;
+        }
+}
