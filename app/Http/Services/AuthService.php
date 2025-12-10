@@ -2,12 +2,19 @@
 
 namespace App\Http\Services;
 
+use App\Enums\Role\RoleName;
+use App\Enums\User\UserStatus;
 use App\Models\User;
 
 class AuthService // extends CrudService
 {
     public function register(array $data)
     {
+        $data = array_merge([
+            ...$data,
+            'role' => RoleName::user->value,
+            'status' => UserStatus::pending->value,
+        ]);
         $user = User::query()->create($data);
        
         return [

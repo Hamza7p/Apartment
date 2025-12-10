@@ -30,9 +30,9 @@ class User extends Authenticatable
         'date_of_birth',
         'id_photo',
         'personal_photo',
-        'username'
-        // 'role',
-        // 'status',
+        'username',
+        'role',
+        'status',
         // 'verified_at',
     ];
 

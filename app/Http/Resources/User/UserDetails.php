@@ -30,11 +30,11 @@ class UserDetails extends BaseJsonResource
             'last_name' => $this->last_name,
             'username' => $this->username,
             'date_of_birth' => $this->date_of_birth,
-            'role_id' => $this->role_id,
+            'role' => $this->role,
             'id_photo' => $this->id_photo,
             'personal_photo' => $this->personal_photo,
             'status' => $this->status,
-            'verified_at' => $this->verified_at,
+            // 'verified_at' => $this->verified_at,
         ];
     }
 }

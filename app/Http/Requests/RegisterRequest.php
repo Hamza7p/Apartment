@@ -24,14 +24,12 @@ class RegisterRequest extends FormRequest
         return [
             'phone' => ['required', 'string', 'regex:/^9639\d{8}$/', 'unique:users,phone'],
             'password' => ['required', 'string', 'min:4', 'confirmed'],
-            'phone' => ['required', 'string', 'regex:/^9639\d{8}$/'],
-            'password' => ['required', 'string', 'min:4', 'confirmed'],
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'username' => ['nullable', 'string', 'max:255', 'unique:users,username'],
             'date_of_birth' => ['required', 'date'],
-            'id_photo' => ['required', 'integer', 'exist:media,id'],
-            'personal_photo' => ['required', 'integer', 'exist:media,id'],
+            'id_photo' => ['required', 'integer', 'exists:media,id'],
+            'personal_photo' => ['required', 'integer', 'exists:media,id'],
         ];
     }
 }

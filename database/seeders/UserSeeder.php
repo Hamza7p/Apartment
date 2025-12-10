@@ -14,6 +14,8 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        $now = now();
+
         User::create([
             'phone'          => '963944068317',
             'password'       => Hash::make('password'),
@@ -24,8 +26,9 @@ class UserSeeder extends Seeder
             'id_photo'       => null,
             'personal_photo' => null,
             'username'       => 'admin', 
-            'updated_at'     => now(),
-            'created_at'     => now(),
+            'verified_at'    => $now,
+            'updated_at'     => $now,
+            'created_at'     => $now,
         ]);
     }
 }
