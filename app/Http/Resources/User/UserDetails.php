@@ -12,9 +12,8 @@ class UserDetails extends JsonResource
      *
      * @return array<string, mixed>
      */
-
-     protected static function relations(): array
-     {
+    protected static function relations(): array
+    {
         return [
             'role',
             'idPhoto',
