@@ -20,7 +20,8 @@ class UserDetails extends JsonResource
             'idPhoto',
             'personalPhoto',
         ];
-     }
+    }
+
     public function toArray(Request $request): array
     {
         return [
