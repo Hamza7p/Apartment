@@ -1,17 +1,20 @@
 <?php
 
-namespace {{ namespace }};
+namespace App\Http\Requests;
 
+use App\Enums\Medium\MediumFor;
+use App\Enums\Medium\MediumType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class {{ class }} extends FormRequest
+class MediaRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -23,10 +26,12 @@ class {{ class }} extends FormRequest
     {
         switch (request()->method()) {
             default:
-                return [];
             case 'POST':
                 return [
-                    //
+                    'media' => ['required', 'array', 'min:1'],
+                    'media.*.medium' => ['required', 'file'],
+                    'media.*.type' => ['required', Rule::in(MediumType::values())],
+                    'media.*.for' => ['required', Rule::in(MediumFor::values())]
                 ];
             case 'PUT':
                 return [

@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Enums\Role\RoleName;
 use App\Enums\User\UserStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,10 +27,10 @@ class User extends Authenticatable
         'first_name',
         'last_name',
         'date_of_birth',
-        'role_id',
         'id_photo',
         'personal_photo',
         'username'
+        // 'role',
         // 'status',
         // 'verified_at',
     ];
@@ -54,12 +55,8 @@ class User extends Authenticatable
             'verified_at' => 'datetime',
             'password' => 'hashed',
             'status' => UserStatus::class,
+            'role' => RoleName::class,
         ];
-    }
-
-    public function role(): BelongsTo
-    {
-        return $this->belongsTo(Role::class);
     }
 
     public function idPhoto(): BelongsTo

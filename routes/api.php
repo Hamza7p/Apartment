@@ -1,13 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\MediumController;
 use Illuminate\Support\Facades\Route;
-
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
-
 
 Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
@@ -17,3 +12,6 @@ Route::prefix('auth')->group(function () {
     Route::post('me', [AuthController::class, 'me']);
     Route::post('send-otp', [AuthController::class, 'sendOtp']);
 });
+
+Route::apiResource('media', MediumController::class)->only(['show', 'store']);
+Route::post('media/store-many', [MediumController::class, 'storeMultiple']);

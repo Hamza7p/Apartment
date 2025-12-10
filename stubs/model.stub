@@ -3,9 +3,9 @@
 namespace {{ namespace }};
 
 {{ factoryImport }}
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Base\BaseModel;
 
-class {{ class }} extends Model
+class {{ class }} extends BaseModel
 {
     {{ factory }}
 }

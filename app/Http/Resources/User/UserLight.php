@@ -5,7 +5,7 @@ namespace App\Http\Resources\User;
 use App\Http\Resources\Base\BaseJsonResource;
 use Illuminate\Http\Request;
 
-class UserDetails extends BaseJsonResource
+class UserLight extends BaseJsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,9 +16,6 @@ class UserDetails extends BaseJsonResource
      protected static function relations(): array
      {
         return [
-            'role',
-            'idPhoto',
-            'personalPhoto',
         ];
      }
     public function toArray(Request $request): array
@@ -29,12 +26,6 @@ class UserDetails extends BaseJsonResource
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
             'username' => $this->username,
-            'date_of_birth' => $this->date_of_birth,
-            'role_id' => $this->role_id,
-            'id_photo' => $this->id_photo,
-            'personal_photo' => $this->personal_photo,
-            'status' => $this->status,
-            'verified_at' => $this->verified_at,
         ];
     }
 }
