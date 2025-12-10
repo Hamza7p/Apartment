@@ -9,11 +9,10 @@ class AuthService // extends CrudService
     public function register(array $data)
     {
         $user = User::query()->create($data);
-        $token = $user->createToken('auth_token')->plainTextToken;
-
+       
         return [
+            'token' => $this->createToken($user),
             'user' => $user,
-            'token' => $token,
         ];
     }
 
