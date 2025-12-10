@@ -12,15 +12,15 @@ class UserDetails extends BaseJsonResource
      *
      * @return array<string, mixed>
      */
-
-     protected static function relations(): array
-     {
+    protected static function relations(): array
+    {
         return [
             'role',
             'idPhoto',
             'personalPhoto',
         ];
-     }
+    }
+
     public function toArray(Request $request): array
     {
         return [
