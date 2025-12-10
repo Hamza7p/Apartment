@@ -4,7 +4,8 @@ namespace App\Enums\User;
 
 enum UserStatus: int
 {
-    case active = 1;
+    case approved = 1;
     case pending = 2;
-    case blocked = 3;
+    case rejected = 3;
+    case blocked = 4;
 }

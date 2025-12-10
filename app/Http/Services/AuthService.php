@@ -3,25 +3,45 @@
 namespace App\Http\Services;
 
 use App\Http\Services\Base\CrudService;
-
+use App\Models\User;
 
 class AuthService //extends CrudService
 {
-    public function sendOtp(string $phone)
+    public function register(array $data)
     {
-        // $code = $this->otpService->generate($phone);
-        // if ($mobile == '962778149147') {
-        //     return;
-        // }
-        // $notification = new OtpCodeNotification($mobile, $code, app()->getLocale(), $channel, $suffix);
-
-        // if ($channel === OtpChannel::sms->value && isSyrianNumber($mobile)) {
-        //     Notification::route(SmsChannel::class, $mobile)
-        //         ->notify($notification);
-        // } else {
-        //     $notification->channel = OtpChannel::whatsapp->value;
-        //     Notification::route(WhatsappChannel::class, $mobile)
-        //         ->notify($notification);
-        // }
+        $user = User::query()->create($data);
+        return [
+            'token' => $this->createToken($user),
+            'user' => $user,
+        ];
     }
+
+    public function login(array $data)
+    {
+        $user = User::where('phone', $data['phone'])->first();
+        if (!$user) {
+            throw new \Exception('User not found');
+        }
+        return [
+            'token' => $this->createToken($user),
+            'user' => $user,
+        ];
+    }
+
+    public function createToken(User $user)
+    {
+        $token = $user->createToken('authToken');
+        return $token->plainTextToken;
+    }
+
+    public function logout(User $user)
+    {
+        $user->tokens()->delete();
+    }
+
+    public function me(User $user)
+    {
+        return User::query()->find($user->id);
+    }
+
 }
