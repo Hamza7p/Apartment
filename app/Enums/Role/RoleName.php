@@ -2,8 +2,8 @@
 
 namespace App\Enums\Role;
 
-enum RoleName: int
+enum RoleName: string
 {
-    case admin = 1;
-    case user = 2;
+    case admin = 'admin';
+    case user = 'user';
 }

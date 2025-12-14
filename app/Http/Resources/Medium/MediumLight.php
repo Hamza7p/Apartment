@@ -1,15 +1,15 @@
 <?php
 
-namespace {{ namespace }};
+namespace App\Http\Resources\Medium;
 
 use App\Http\Resources\Base\BaseJsonResource;
 
-class {{ class }} extends BaseJsonResource
+class MediumLight extends BaseJsonResource
 {
     protected static function relations(): array
     {
         return [
-
+            //
         ];
     }
 
@@ -17,8 +17,8 @@ class {{ class }} extends BaseJsonResource
     {
         return [
             'id' => $this->id,
-            {{ attributes }}
-
+            'name' => $this->name,
+            'url' => $this->url,
         ];
     }
 }

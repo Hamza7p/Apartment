@@ -15,7 +15,6 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
             $table->string('phone')->unique();
             $table->timestamp('verified_at')->nullable();
             $table->integer('status')->default(UserStatus::pending->value);
@@ -24,7 +23,7 @@ return new class extends Migration
             $table->string('last_name')->nullable();
             $table->string('username')->unique()->nullable();
             $table->date('date_of_birth')->nullable();
-            $table->foreignId('role_id')->constrained('roles', 'id')->default(RoleName::user->value);
+            $table->string('role')->default(RoleName::user->value);
             $table->foreignId('id_photo')->nullable()->constrained('media', 'id')->nullOnDelete();
             $table->foreignId('personal_photo')->nullable()->constrained('media', 'id')->nullOnDelete();
 

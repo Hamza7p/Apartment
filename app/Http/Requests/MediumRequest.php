@@ -1,10 +1,13 @@
 <?php
 
-namespace {{ namespace }};
+namespace App\Http\Requests;
 
+use App\Enums\Medium\MediumFor;
+use App\Enums\Medium\MediumType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class {{ class }} extends FormRequest
+class MediumRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +29,9 @@ class {{ class }} extends FormRequest
                 return [];
             case 'POST':
                 return [
-                    //
+                    'medium' => ['required', 'file', 'mimes:png,jpg,jpeg,pdf,word', 'max:4096'],
+                    'type' => ['required', Rule::in(MediumType::values())],
+                    'for' => ['required', Rule::in(MediumFor::values())]
                 ];
             case 'PUT':
                 return [

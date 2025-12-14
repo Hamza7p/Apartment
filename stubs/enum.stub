@@ -1,8 +1,12 @@
 <?php
 
-namespace App\Enums {{ namespace }};
+namespace {{ namespace }};
+
+use App\Enums\Base\EnumToArray;
 
 enum {{ class }}
 {
+    use EnumToArray;
+    
     //
 }
