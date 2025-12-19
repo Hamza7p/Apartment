@@ -3,7 +3,6 @@
 namespace App\Http\Services\Base;
 
 use App\Filters\Base\BaseFilter;
-use App\Http\Requests\Base\BaseFromRequest;
 use App\Models\Base\BaseModel;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -27,7 +26,7 @@ abstract class CrudService
     //     return $filter->apply($query);
     // }
 
-    public function find(mixed $id): BaseModel
+    public function find(mixed $id): ?BaseModel
     {
         if ($id instanceof BaseModel) {
             return $id;
@@ -45,6 +44,7 @@ abstract class CrudService
     {
         $model = $this->find($id);
         $model->update($data);
+
         return $model;
     }
 

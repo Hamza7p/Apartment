@@ -14,11 +14,13 @@ return new class extends Migration
     {
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('reservation_request_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete(); // tenant
             $table->foreignId('apartment_id')->constrained()->cascadeOnDelete();
             $table->date('start_date');
             $table->date('end_date');
-            $table->enum('status', array_column(ReservationStatus::cases(), 'value'))->default(ReservationStatus::PENDING->value);
+            $table->decimal('total_amount', 10, 2);
+            $table->string('status')->default('active'); // enum: active, cancelled, completed
             $table->index('user_id');
             $table->index('apartment_id');
             $table->softDeletes();

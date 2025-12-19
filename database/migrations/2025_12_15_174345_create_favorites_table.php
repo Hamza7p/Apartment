@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ratings', function (Blueprint $table) {
+        Schema::create('favorites', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('apartment_id')->constrained()->cascadeOnDelete();
-            $table->unsignedInteger('rate'); // 1 - 5 stars
-            $table->unique(['user_id', 'apartment_id']); // prevent the user to rate the same apartment more than one times
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ratings');
+        Schema::dropIfExists('favorites');
     }
 };

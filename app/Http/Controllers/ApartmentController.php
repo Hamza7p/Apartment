@@ -2,10 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\ApartmenRequest;
+use App\Http\Resources\Apartment\ApartmentDetails;
+use App\Http\Services\ApartmentService;
 
 class ApartmentController extends Controller
 {
+    private ApartmentService $apartmentService;
+
+    public function __construct(ApartmentService $apartmentService)
+    {
+        $this->apartmentService = $apartmentService;
+        $this->middleware(['setLocale', 'auth:sanctum', 'isApproved']);
+        // we need to add midellwire here
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -15,19 +26,13 @@ class ApartmentController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ApartmenRequest $request)
     {
-        //
+        $apartment = $this->apartmentService->create($request->validated());
+
+        return new ApartmentDetails($apartment);
     }
 
     /**
@@ -35,23 +40,19 @@ class ApartmentController extends Controller
      */
     public function show(string $id)
     {
-        //
-    }
+        $apartment = $this->apartmentService->find($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
+        return new ApartmentDetails($apartment);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(string $id, ApartmenRequest $request)
     {
-        //
+        $apartment = $this->apartmentService->update($id, $request->validated());
+
+        return new ApartmentDetails($apartment);
     }
 
     /**
@@ -59,6 +60,8 @@ class ApartmentController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $this->apartmentService->delete($id);
+
+        return response()->noContent();
     }
 }

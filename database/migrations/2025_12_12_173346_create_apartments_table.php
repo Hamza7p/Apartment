@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\Apartment\ServicesType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,13 +13,19 @@ return new class extends Migration
     {
         Schema::create('apartments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete(); // owner
+            $table->json('title');
+            $table->json('description');
+            $table->decimal('price', 10, 2);
+            $table->string('currency'); // $ or € or SYP
+            $table->json('governorate');
+            $table->json('city');
+            $table->json('address');
+            $table->string('status')->default('available'); // enum: available, reserved, under_maintenance
             $table->unsignedInteger('number_of_room');
-            $table->string('address', 500);
-            $table->enum('services', array_column(ServicesType::cases(), 'value'))->default(ServicesType::BASIC->value);
-            $table->text('description');
-            $table->boolean('is_available')->default(true);
-            $table->decimal('price', 10, 2)->nullable();
+            $table->unsignedInteger('number_of_bathroom');
+            $table->unsignedInteger('area');
+            $table->unsignedInteger('floor');
 
             $table->timestamps();
         });

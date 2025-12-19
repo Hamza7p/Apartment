@@ -7,7 +7,6 @@ use App\Http\Requests\MediumRequest;
 use App\Http\Resources\Medium\MediumDetails;
 use App\Http\Services\MediumService;
 use App\Models\Medium;
-use Illuminate\Http\Request;
 
 class MediumController extends Controller
 {
@@ -18,7 +17,6 @@ class MediumController extends Controller
         $this->mediumService = $mediumService;
         $this->middleware('auth:sanctum')->only('storeMultiple');
     }
-
 
     public function store(MediumRequest $request)
     {

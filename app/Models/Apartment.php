@@ -2,22 +2,47 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Base\BaseModel;
 
-class Apartment extends Model
+class Apartment extends BaseModel
 {
     protected $fillable = [
         'user_id',
-        'number_of_room',
-        'address',
-        'services',
+        'title',
         'description',
-        'is_available',
         'price',
+        'currency',
+        'governorate',
+        'city',
+        'address',
+        'status',
+        'number_of_room',
+        'number_of_bathroom',
+        'area',
+        'floor',
+    ];
+
+    protected $attributes = [
+        'status' => 'available',
+    ];
+
+    protected $casts = [
+        'title' => 'array',
+        'description' => 'array',
+        'governorate' => 'array',
+        'city' => 'array',
+        'address' => 'array',
     ];
 
     public function photos()
     {
-        return $this->hasMany(ApartmentPhoto::class);
+
+        return $this->belongsToMany(
+            Medium::class,
+            'apartment_photo',
+            'apartment_id',
+            'media_id'
+        )->withTimestamps()->withPivot(['order', 'is_main']);
+
     }
 }
