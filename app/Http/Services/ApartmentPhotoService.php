@@ -38,7 +38,7 @@ class ApartmentPhotoService // extends CrudService
         $mediaItems = $this->mediumService->createMultiple($data);
 
         $hasMain = $apartment->photos()->wherePivot('is_main', true)->exists();
-        $lastOrder = $apartment->photos()->max('apartment_photo.order');
+        $lastOrder = $apartment->photos()->max('apartment_photos.order');
         $startOrder = $lastOrder ?? 0;
         $attachData = [];
         foreach ($mediaItems as $index => $medium) {
@@ -55,23 +55,27 @@ class ApartmentPhotoService // extends CrudService
     public function setMainPhoto($apartmentId, $mediaId)
     {
         $apartment = Apartment::findOrFail($apartmentId);
-        $mainPhoto = $apartment->photos()->where('media_id', $mediaId)->firstOrFail();
+        // $mainPhoto = $apartment->photos()->where('media_id', $mediaId)->firstOrFail();
 
-        $apartment->photos()->updateExistingPivot(
-            $apartment->photos->pluck('id'),
-            ['is_main' => false]
-        );
+        $apartment->photos()->update(['apartment_photos.is_main' => 0]);
 
         $apartment->photos()->updateExistingPivot(
             $mediaId,
             ['is_main' => true]
         );
 
-        return $mainPhoto;
+        return $apartment->photos()->wherePivot('is_main', true)->firstOrFail();
 
     }
 
-    public function delete($apartmentId, $mediaId): void
+    public function getMainPhoto($apartmentId)
+    {
+        $mainPhoto = Apartment::findOrFail($apartmentId)->photos()->wherePivot('is_main', 1)->firstOrFail();
+
+        return $mainPhoto;
+    }
+
+    public function deletePhoto($apartmentId, $mediaId)
     {
         $apartment = Apartment::findOrFail($apartmentId);
 
@@ -83,7 +87,7 @@ class ApartmentPhotoService // extends CrudService
 
         if (! $hasMain) {
             $firstPhoto = $apartment->photos()
-                ->orderBy('apartment_photo.order')
+                ->orderBy('apartment_photos.order')
                 ->first();
 
             if ($firstPhoto) {

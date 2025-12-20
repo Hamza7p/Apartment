@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\User\UserStatus;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +19,7 @@ class CheckUserStatus
     {
         if (! Auth::check()) {
             return response()->json(['message' => __('errors.unauthorized')], 401);
-        } elseif (Auth::user()->status->value !== 1) {
+        } elseif (Auth::user()->status->value !== UserStatus::approved->value) {
             return response()->json(['message' => __('errors.account_not_approved')], 403);
         }
 

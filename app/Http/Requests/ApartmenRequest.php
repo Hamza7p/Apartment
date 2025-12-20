@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\Apartment\Governorate;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ApartmenRequest extends FormRequest
 {
@@ -36,9 +38,7 @@ class ApartmenRequest extends FormRequest
 
                     'currency' => ['required', 'in:$,€,SYP'],
 
-                    'governorate' => ['required', 'array'],
-                    'governorate.en' => ['required', 'string'],
-                    'governorate.ar' => ['required', 'string'],
+                    'governorate' => ['required', 'integer', Rule::in(Governorate::class::values())],
 
                     'city' => ['required', 'array'],
                     'city.en' => ['required', 'string'],

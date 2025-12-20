@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Apartment;
 
 use App\Http\Resources\Base\BaseJsonResource;
+use App\Http\Resources\Medium\MediumLight;
 
 class ApartmentPhotoDetails extends BaseJsonResource
 {
@@ -16,11 +17,10 @@ class ApartmentPhotoDetails extends BaseJsonResource
     public function toArray($request): array
     {
         return [
-            'media_id' => $this->id,
-            'apartment_id' => $this->pivot->apartment_id ?? null,
+            'medium' => new MediumLight($this),
+            'apartmen_id' => $this->pivot->apartment_id,
             'order' => $this->pivot->order ?? null,
-            'is_main' => $this->pivot->is_main ?? false,
-            'created_at' => $this->created_at->format('Y-m-d'),
+            'is_main' => $this->pivot->is_main ?? null,
         ];
     }
 }

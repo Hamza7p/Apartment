@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ApartmentPhotoRequest;
+use App\Http\Requests\MediaRequest;
 use App\Http\Resources\Apartment\ApartmentPhotoDetails;
 use App\Http\Services\ApartmentPhotoService;
 
@@ -37,7 +37,7 @@ class ApartmentPhotoController extends Controller
         return ApartmentPhotoDetails::collection($photos);
     }
 
-    public function store(ApartmentPhotoRequest $request, $apartment_id)
+    public function store(MediaRequest $request, $apartment_id)
     {
         $photos = $this->apartmentPhotoService->storeMultiplePhoto($request->validated(), $apartment_id);
 
@@ -61,7 +61,7 @@ class ApartmentPhotoController extends Controller
      */
     public function destroy($apartmentId, $mediaId)
     {
-        $this->apartmentPhotoService->delete($apartmentId, $mediaId);
+        $this->apartmentPhotoService->deletePhoto($apartmentId, $mediaId);
 
         return response()->noContent();
     }
@@ -72,5 +72,12 @@ class ApartmentPhotoController extends Controller
 
         return new ApartmentPhotoDetails($mainPhoto);
 
+    }
+
+    public function getMainPhoto($apartmentId)
+    {
+        $mainPhoto = $this->apartmentPhotoService->getMainPhoto($apartmentId);
+
+        return new ApartmentPhotoDetails($mainPhoto);
     }
 }

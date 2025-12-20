@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Apartment;
 
 use App\Http\Resources\Base\BaseJsonResource;
+use App\Http\Resources\User\UserLight;
 
 class ApartmentDetails extends BaseJsonResource
 {
@@ -17,12 +18,16 @@ class ApartmentDetails extends BaseJsonResource
     {
         return [
             'id' => $this->id,
-            'owner_id' => $this->user_id,
+            'owner' => new UserLight($this->whenLoaded('owner')),
             'title' => $this->title,
             'description' => $this->description,
             'price' => $this->price,
             'currency' => $this->currency,
-            'governorate' => $this->governorate,
+            'governorate' => [
+                'value' => $this->governorate->value,
+                'en' => $this->governorate->label('en'),
+                'ar' => $this->governorate->label('ar'),
+            ],
             'city' => $this->city,
             'address' => $this->address,
             'status' => $this->status,
@@ -31,6 +36,7 @@ class ApartmentDetails extends BaseJsonResource
             'area' => $this->area,
             'floor' => $this->floor,
             'created_at' => $this->created_at->format('Y-m-d'),
+            'photos' => ApartmentPhotoDetails::collection($this->whenLoaded('photos')),
 
         ];
     }
