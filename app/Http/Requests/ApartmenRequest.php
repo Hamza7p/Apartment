@@ -68,9 +68,7 @@ class ApartmenRequest extends FormRequest
 
                     'currency' => ['sometimes', 'in:$,€,SYP'],
 
-                    'governorate' => ['sometimes', 'array'],
-                    'governorate.en' => ['required_with:governorate', 'string'],
-                    'governorate.ar' => ['required_with:governorate', 'string'],
+                    'governorate' => ['sometimes', 'integer', Rule::in(Governorate::class::values())],
 
                     'city' => ['sometimes', 'array'],
                     'city.en' => ['required_with:city', 'string'],
