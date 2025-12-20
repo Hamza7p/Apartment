@@ -54,4 +54,9 @@ class Apartment extends BaseModel
         )->withTimestamps()->withPivot(['order', 'is_main']);
 
     }
+
+    public function apartmentPhotos()
+    {
+        return $this->hasMany(ApartmentPhoto::class);
+    }
 }

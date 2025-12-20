@@ -17,9 +17,10 @@ class ApartmentPhotoDetails extends BaseJsonResource
     public function toArray($request): array
     {
         return [
-            'medium' => new MediumLight($this),
-            'order' => $this->pivot->order ?? null,
-            'is_main' => $this->pivot->is_main ?? null,
+            'medium' => new MediumLight($this->medium),
+            'apartment' => new ApartmentLight($this->apartment),
+            'order' => $this->order,
+            'is_main' => $this->is_main,
         ];
     }
 }

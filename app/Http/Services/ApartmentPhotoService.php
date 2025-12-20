@@ -26,9 +26,9 @@ class ApartmentPhotoService // extends CrudService
             return $apartmentId->photos;
         }
 
-        $apartment = Apartment::findOrFail($apartmentId);
+        $apartment = ApartmentPhoto::with(['medium', 'apartment'])->where('apartment_id', $apartmentId)->get();
 
-        return $apartment->photos;
+        return $apartment;
     }
 
     public function storeMultiplePhoto(array $data, $apartment_id)

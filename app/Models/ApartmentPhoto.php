@@ -8,8 +8,18 @@ class ApartmentPhoto extends BaseModel
 {
     protected $fillable = [
         'apartment_id',
-        'medai_id',
+        'medium_id',
         'order',
         'is_main',
     ];
+
+    public function apartment()
+    {
+        return $this->belongsTo(Apartment::class);
+    }
+
+    public function medium()
+    {
+        return $this->belongsTo(Medium::class);
+    }
 }
