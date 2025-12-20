@@ -4,24 +4,17 @@ namespace App\Http\Resources\User;
 
 use App\Http\Resources\Base\BaseJsonResource;
 use App\Http\Resources\Medium\MediumLight;
-use Illuminate\Http\Request;
 
-class UserDetails extends BaseJsonResource
+class UserList extends BaseJsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     protected static function relations(): array
     {
         return [
-            'idPhoto',
             'personalPhoto',
         ];
     }
 
-    public function toArray(Request $request): array
+    public function toArray($request): array
     {
         return [
             'id' => $this->id,
@@ -31,7 +24,6 @@ class UserDetails extends BaseJsonResource
             'username' => $this->username,
             'date_of_birth' => $this->date_of_birth,
             'role' => $this->role,
-            'id_photo' => new MediumLight($this->whenLoaded('idPhoto')),
             'personal_photo' => new MediumLight($this->whenLoaded('personalPhoto')),
             'status' => $this->status,
             'verified_at' => $this->verified_at,

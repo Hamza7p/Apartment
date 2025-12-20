@@ -6,16 +6,18 @@ namespace App\Models;
 
 use App\Enums\Role\RoleName;
 use App\Enums\User\UserStatus;
+use App\Models\Base\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
+use Illuminate\Contracts\Auth\Authenticatable;
 
-class User extends Authenticatable
+class User extends BaseModel implements Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable;
+    use AuthenticatableTrait, HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -68,5 +70,10 @@ class User extends Authenticatable
     public function personalPhoto(): BelongsTo
     {
         return $this->belongsTo(Medium::class, 'personal_photo');
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role->value === RoleName::admin->value;
     }
 }

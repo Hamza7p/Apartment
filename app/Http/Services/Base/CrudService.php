@@ -3,7 +3,6 @@
 namespace App\Http\Services\Base;
 
 use App\Filters\Base\BaseFilter;
-use App\Http\Requests\Base\BaseFromRequest;
 use App\Models\Base\BaseModel;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -11,7 +10,7 @@ abstract class CrudService
 {
     abstract protected function getModelClass(): string;
 
-    protected function getQuery(bool $withTrashed = false): Builder
+    protected function getQuery(): Builder
     {
         $model = $this->getModelClass();
 
@@ -21,11 +20,11 @@ abstract class CrudService
         return $query;
     }
 
-    // public function getAll(?BaseFilter $filter = null, bool $withTrashed = false): Builder
-    // {
-    //     $query = $this->getQuery($withTrashed);
-    //     return $filter->apply($query);
-    // }
+    public function getAll(?BaseFilter $filter = null, bool $withTrashed = false): Builder
+    {
+        $query = $this->getQuery($withTrashed);
+        return $filter->apply($query);
+    }
 
     public function find(mixed $id): BaseModel
     {

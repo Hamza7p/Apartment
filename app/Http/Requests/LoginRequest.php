@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class LoginRequest extends FormRequest
 {
@@ -22,7 +23,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone' => ['required', 'string', 'regex:/^9639\d{8}$/'],
+            'phone' => ['required', 'string', 'regex:/^9639\d{8}$/', 'exists:users,phone'],
             'password' => ['required', 'string', 'min:4'],
         ];
     }

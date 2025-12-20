@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MediumController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -13,3 +14,4 @@ Route::prefix('auth')->group(function () {
 
 Route::apiResource('media', MediumController::class)->only(['show', 'store']);
 Route::post('media/store-many', [MediumController::class, 'storeMultiple']);
+Route::apiResource('users', UserController::class);
