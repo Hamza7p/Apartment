@@ -17,7 +17,7 @@ class ApartmentLight extends BaseJsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->tilte,
+            'title' => $this->title,
 
         ];
     }

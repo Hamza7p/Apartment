@@ -43,19 +43,19 @@ class Apartment extends BaseModel
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    // public function photos()
+    // {
+
+    //     return $this->belongsToMany(
+    //         Medium::class,
+    //         'apartment_photos',
+    //         'apartment_id',
+    //         'medium_id'
+    //     )->withTimestamps()->withPivot(['order', 'is_main']);
+
+    // }
+
     public function photos()
-    {
-
-        return $this->belongsToMany(
-            Medium::class,
-            'apartment_photos',
-            'apartment_id',
-            'medium_id'
-        )->withTimestamps()->withPivot(['order', 'is_main']);
-
-    }
-
-    public function apartmentPhotos()
     {
         return $this->hasMany(ApartmentPhoto::class);
     }

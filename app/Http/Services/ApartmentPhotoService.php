@@ -23,75 +23,75 @@ class ApartmentPhotoService // extends CrudService
     public function getPhotos($apartmentId)
     {
         if ($apartmentId instanceof Apartment) {
-            return $apartmentId->photos;
+            return $apartmentId->photos()->with('medium')->get();
         }
 
-        $apartment = ApartmentPhoto::with(['medium', 'apartment'])->where('apartment_id', $apartmentId)->get();
-
-        return $apartment;
+        return ApartmentPhoto::with(['apartment', 'medium'])
+            ->where('apartment_id', $apartmentId)
+            ->get();
     }
 
-    public function storeMultiplePhoto(array $data, $apartment_id)
+    public function storeMultiplePhoto(array $data, int $apartmentId)
     {
-        $apartment = Apartment::findOrFail($apartment_id);
+        $apartment = Apartment::findOrFail($apartmentId);
 
         $mediaItems = $this->mediumService->createMultiple($data);
 
-        $hasMain = $apartment->photos()->wherePivot('is_main', true)->exists();
-        $lastOrder = $apartment->photos()->max('apartment_photos.order');
-        $startOrder = $lastOrder ?? 0;
-        $attachData = [];
+        $hasMain = $apartment->photos()->where('is_main', true)->exists();
+        $order = $apartment->photos()->max('order') ?? 0;
+
         foreach ($mediaItems as $index => $medium) {
-            $attachData[$medium->id] = [
-                'order' => $startOrder + 1,
+            $apartment->photos()->create([
+                'medium_id' => $medium->id,
+                'order' => ++$order,
                 'is_main' => ! $hasMain && $index === 0,
-            ];
+            ]);
         }
-        $apartment->photos()->attach($attachData);
 
-        return $apartment->photos()->get();
+        return $apartment->photos()->with('medium')->get();
     }
 
-    public function setMainPhoto($apartmentId, $mediaId)
-    {
-        $apartment = Apartment::findOrFail($apartmentId);
-        // $mainPhoto = $apartment->photos()->where('media_id', $mediaId)->firstOrFail();
-
-        $apartment->photos()->update(['apartment_photos.is_main' => 0]);
-
-        $apartment->photos()->updateExistingPivot(
-            $mediaId,
-            ['is_main' => true]
-        );
-
-        return $apartment->photos()->wherePivot('is_main', true)->firstOrFail();
-
-    }
-
-    public function getMainPhoto($apartmentId)
-    {
-        $mainPhoto = Apartment::findOrFail($apartmentId)->photos()->wherePivot('is_main', 1)->firstOrFail();
-
-        return $mainPhoto;
-    }
-
-    public function deletePhoto($apartmentId, $mediaId)
+    public function setMainPhoto(int $apartmentId, int $mediumId)
     {
         $apartment = Apartment::findOrFail($apartmentId);
 
-        $apartment->photos()->detach($mediaId);
+        // Remove main flag from all
+        $apartment->photos()->update(['is_main' => false]);
 
-        $hasMain = $apartment->photos()
-            ->wherePivot('is_main', true)
-            ->exists();
+        // Set new main
+        $mainPhoto = $apartment->photos()
+            ->where('medium_id', $mediumId)
+            ->firstOrFail();
 
-        if (! $hasMain) {
-            $firstPhoto = $apartment->photos()
-                ->orderBy('apartment_photos.order')
-                ->first();
+        $mainPhoto->update(['is_main' => true]);
 
+        return $mainPhoto->load('medium');
+    }
+
+    public function getMainPhoto(int $apartmentId)
+    {
+        return Apartment::findOrFail($apartmentId)
+            ->photos()
+            ->where('is_main', true)
+            ->with('medium')
+            ->firstOrFail();
+    }
+
+    public function deletePhoto(int $apartmentId, int $mediumId)
+    {
+        $apartment = Apartment::findOrFail($apartmentId);
+
+        $photo = $apartment->photos()
+            ->where('medium_id', $mediumId)
+            ->firstOrFail();
+
+        $photo->delete();
+
+        // Ensure a main photo exists
+        if (! $apartment->photos()->where('is_main', true)->exists()) {
+            $firstPhoto = $apartment->photos()->orderBy('order')->first();
             if ($firstPhoto) {
-                $this->setMainPhoto($apartmentId, $firstPhoto->id);
+                $firstPhoto->update(['is_main' => true]);
             }
         }
     }
