@@ -14,7 +14,7 @@ class MediaRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,7 @@ class MediaRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+    public function rules()
     {
         switch (request()->method()) {
             default:
@@ -31,7 +31,7 @@ class MediaRequest extends FormRequest
                     'media' => ['required', 'array', 'min:1'],
                     'media.*.medium' => ['required', 'file'],
                     'media.*.type' => ['required', Rule::in(MediumType::values())],
-                    'media.*.for' => ['required', Rule::in(MediumFor::values())]
+                    'media.*.for' => ['required', Rule::in(MediumFor::values())],
                 ];
             case 'PUT':
                 return [

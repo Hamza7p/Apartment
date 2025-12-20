@@ -21,4 +21,12 @@ class ApartmentService extends CrudService
 
         return parent::create($data);
     }
+
+    public function find(mixed $id): ?BaseModel
+    {
+        $apartment = parent::find($id);
+        $apartment->load(['owner', 'photos']);
+
+        return $apartment;
+    }
 }

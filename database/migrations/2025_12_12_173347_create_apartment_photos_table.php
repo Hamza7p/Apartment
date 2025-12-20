@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('apartment_photo', function (Blueprint $table) {
+        Schema::create('apartment_photos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('apartment_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('media_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('medium_id')->constrained()->cascadeOnDelete();
             $table->unsignedInteger('order')->default(0);
             $table->boolean('is_main')->default(false);
-            $table->unique(['apartment_id', 'media_id']);
+            $table->unique(['apartment_id', 'medium_id']);
             $table->timestamps();
         });
     }

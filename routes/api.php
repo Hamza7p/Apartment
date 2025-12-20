@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Apartment\Governorate;
 use App\Http\Controllers\ApartmentController;
 use App\Http\Controllers\ApartmentPhotoController;
 use App\Http\Controllers\AuthController;
@@ -13,12 +14,17 @@ Route::prefix('auth')->group(function () {
     Route::get('me', [AuthController::class, 'me']);
 });
 
-Route::apiResource('apartment', ApartmentController::class);
-
-Route::apiResource('apartment/{id}/photo', ApartmentPhotoController::class);
-// Route::post('apartment/{id}/photo', [ApartmentPhotoController::class, 'store']);
-// Route::get('apartment/{id}/photo', [ApartmentPhotoController::class, 'show']);
+Route::post('apartment/{apartmentId}/photo', [ApartmentPhotoController::class, 'store']);
+Route::get('apartment/{apartmentId}/photo', [ApartmentPhotoController::class, 'index']);
 Route::put('apartment/{apartmentId}/photo/{photoId}/main', [ApartmentPhotoController::class, 'setMainPhoto']);
+Route::get('apartment/{apartmentId}/photo/main', [ApartmentPhotoController::class, 'getMainPhoto']);
+
+Route::apiResource('apartment/{apartmentId}/photo', ApartmentPhotoController::class);
+Route::apiResource('apartment', ApartmentController::class);
 
 Route::apiResource('media', MediumController::class)->only(['show', 'store']);
 Route::post('media/store-many', [MediumController::class, 'storeMultiple']);
+
+Route::get('governorates', function () {
+    return Governorate::allLabels();
+});
