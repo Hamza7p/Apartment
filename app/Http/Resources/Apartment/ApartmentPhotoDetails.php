@@ -18,7 +18,6 @@ class ApartmentPhotoDetails extends BaseJsonResource
     {
         return [
             'medium' => new MediumLight($this),
-            'apartmen_id' => $this->pivot->apartment_id,
             'order' => $this->pivot->order ?? null,
             'is_main' => $this->pivot->is_main ?? null,
         ];
