@@ -11,6 +11,7 @@ use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -35,6 +36,7 @@ class User extends BaseModel implements Authenticatable
         'username',
         'role',
         'status',
+        'fcm_token',
         // 'verified_at',
     ];
 
@@ -77,8 +79,17 @@ class User extends BaseModel implements Authenticatable
         return $this->role->value === RoleName::admin->value;
     }
 
+<<<<<<< HEAD
     public function favoriteApartments()
     {
         return $this->belongsToMany(Apartment::class, 'favorites');
+=======
+    /**
+     * Get the notifications for the user.
+     */
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class);
+>>>>>>> 9bf36a3d57ddf14682f5209546a90751d3fcd124
     }
 }
