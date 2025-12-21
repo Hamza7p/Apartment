@@ -6,7 +6,7 @@ use App\Enums\Role\RoleName;
 use App\Enums\User\UserStatus;
 use App\Models\User;
 
-class AuthService // extends CrudService
+class AuthService  //extends CrudService
 {
     public function register(array $data)
     {

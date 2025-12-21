@@ -5,6 +5,7 @@ use App\Http\Controllers\ApartmentController;
 use App\Http\Controllers\ApartmentPhotoController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MediumController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -28,3 +29,4 @@ Route::post('media/store-many', [MediumController::class, 'storeMultiple']);
 Route::get('governorates', function () {
     return Governorate::allLabels();
 });
+Route::apiResource('users', UserController::class);
