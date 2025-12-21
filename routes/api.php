@@ -4,7 +4,9 @@ use App\Enums\Apartment\Governorate;
 use App\Http\Controllers\ApartmentController;
 use App\Http\Controllers\ApartmentPhotoController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\MediumController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +22,14 @@ Route::get('apartment/{apartmentId}/photo', [ApartmentPhotoController::class, 'i
 Route::put('apartment/{apartmentId}/photo/{photoId}/main', [ApartmentPhotoController::class, 'setMainPhoto']);
 Route::get('apartment/{apartmentId}/photo/main', [ApartmentPhotoController::class, 'getMainPhoto']);
 
+Route::post('apartment/{id}/favorite', [FavoriteController::class, 'store']);
+Route::delete('apartment/{id}/favorite', [FavoriteController::class, 'destroy']);
+Route::get('favorites', [FavoriteController::class, 'index']);
+
 Route::apiResource('apartment/{apartmentId}/photo', ApartmentPhotoController::class);
+
+Route::apiResource('apartment/review', ReviewController::class);
+
 Route::apiResource('apartment', ApartmentController::class);
 
 Route::apiResource('media', MediumController::class)->only(['show', 'store']);

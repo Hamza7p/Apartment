@@ -16,9 +16,8 @@ class ApartmentLight extends BaseJsonResource
     public function toArray($request): array
     {
         return [
-            'id' => $this->id,
-            'title' => $this->title,
-
+            'title' => $this->translate($this->title),
+            'rate' => $this->rate,
         ];
     }
 }

@@ -17,18 +17,19 @@ class UserSeeder extends Seeder
         $now = now();
 
         User::create([
-            'phone'          => '963944068317',
-            'username'       => 'admin', 
-            'password'       => Hash::make('password'),
-            'first_name'     => 'Hamza',
-            'last_name'      => 'At',
-            'date_of_birth'  => '1995-05-15',
-            'role'           => RoleName::admin->value,
-            'id_photo'       => null,
+            'phone' => '963944068317',
+            'username' => 'admin',
+            'password' => Hash::make('password'),
+            'first_name' => 'Hamza',
+            'last_name' => 'At',
+            'date_of_birth' => '1995-05-15',
+            'role' => RoleName::admin->value,
+            'status' => '1',
+            'id_photo' => null,
             'personal_photo' => null,
-            'verified_at'    => $now,
-            'updated_at'     => $now,
-            'created_at'     => $now,
+            'verified_at' => $now,
+            'updated_at' => $now,
+            'created_at' => $now,
         ]);
     }
 }

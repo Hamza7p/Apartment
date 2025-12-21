@@ -23,6 +23,7 @@ abstract class CrudService
     public function getAll(?BaseFilter $filter = null, bool $withTrashed = false): Builder
     {
         $query = $this->getQuery($withTrashed);
+
         return $filter->apply($query);
     }
 

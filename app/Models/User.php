@@ -7,12 +7,12 @@ namespace App\Models;
 use App\Enums\Role\RoleName;
 use App\Enums\User\UserStatus;
 use App\Models\Base\BaseModel;
+use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
-use Illuminate\Contracts\Auth\Authenticatable;
 
 class User extends BaseModel implements Authenticatable
 {
@@ -75,5 +75,10 @@ class User extends BaseModel implements Authenticatable
     public function isAdmin(): bool
     {
         return $this->role->value === RoleName::admin->value;
+    }
+
+    public function favoriteApartments()
+    {
+        return $this->belongsToMany(Apartment::class, 'favorites');
     }
 }
