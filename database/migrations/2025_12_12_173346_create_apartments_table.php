@@ -19,6 +19,7 @@ return new class extends Migration
             $table->json('description');
             $table->decimal('price', 10, 2);
             $table->string('currency'); // $ or € or SYP
+            $table->float('rate')->default(0);
             $table->integer('governorate');
             $table->json('city');
             $table->json('address');

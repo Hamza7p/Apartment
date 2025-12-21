@@ -14,6 +14,7 @@ class Apartment extends BaseModel
         'description',
         'price',
         'currency',
+        'rate',
         'governorate',
         'city',
         'address',
@@ -26,6 +27,7 @@ class Apartment extends BaseModel
 
     protected $attributes = [
         'status' => ApartmentStatus::AVAILABLE->value,
+        'rate' => 0,
     ];
 
     protected $casts = [
@@ -43,17 +45,15 @@ class Apartment extends BaseModel
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // public function photos()
-    // {
+    public function favoritedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'favorites');
+    }
 
-    //     return $this->belongsToMany(
-    //         Medium::class,
-    //         'apartment_photos',
-    //         'apartment_id',
-    //         'medium_id'
-    //     )->withTimestamps()->withPivot(['order', 'is_main']);
-
-    // }
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 
     public function photos()
     {

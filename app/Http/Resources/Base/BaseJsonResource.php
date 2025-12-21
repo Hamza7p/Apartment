@@ -44,20 +44,20 @@ class BaseJsonResource extends JsonResource
         $offset = $builder->getQuery()->unions ? $builder->getQuery()->unionOffset : $builder->getQuery()->offset;
         $total = $builder->toBase()->getCountForPagination();
 
-        //when perPage null return without pagination
-        if (!$perPage) {
+        // when perPage null return without pagination
+        if (! $perPage) {
             return parent::collection($builder->get());
         }
 
-        $page = (int)ceil($offset / $perPage);
-        $lastPage = max((int)ceil($total / $perPage), 1);
+        $page = (int) ceil($offset / $perPage);
+        $lastPage = max((int) ceil($total / $perPage), 1);
 
         $data = parent::collection($builder->get());
         $data->additional = [
             'page' => $page,
             'perPage' => $perPage,
             'lastPage' => $lastPage,
-            'total' => $total
+            'total' => $total,
         ];
 
         return $data;
@@ -72,23 +72,23 @@ class BaseJsonResource extends JsonResource
     {
         $perPage = $builder->getBaseQuery()->limit;
 
-        //when perPage null return without pagination
-        if (!$perPage) {
+        // when perPage null return without pagination
+        if (! $perPage) {
             return parent::collection($builder->get());
         }
 
         $offset = $builder->getBaseQuery()->offset;
         $total = $builder->toBase()->getCountForPagination();
 
-        $page = (int)ceil($offset / $perPage);
-        $lastPage = max((int)ceil($total / $perPage), 1);
+        $page = (int) ceil($offset / $perPage);
+        $lastPage = max((int) ceil($total / $perPage), 1);
 
         $data = parent::collection($builder->get());
         $data->additional = [
             'page' => $page,
             'perPage' => $perPage,
             'lastPage' => $lastPage,
-            'total' => $total
+            'total' => $total,
         ];
 
         return $data;
@@ -99,11 +99,10 @@ class BaseJsonResource extends JsonResource
         $builder->with(static::relations());
         $builder->withCount(static::relationsCount());
         $unions = $builder->getQuery()->unions;
-        if($unions)
-        {
-            foreach($unions as $union) {
-                foreach($union as $unionBuilder) {
-                    if($unionBuilder) {
+        if ($unions) {
+            foreach ($unions as $union) {
+                foreach ($union as $unionBuilder) {
+                    if ($unionBuilder) {
                         $unionBuilder->with(static::relations());
                         $unionBuilder->withCount(static::relationsCount());
                     }
@@ -112,11 +111,10 @@ class BaseJsonResource extends JsonResource
         }
         foreach (static::relationsSum() as $relation => $colum) {
             $builder->withSum($relation, $colum);
-            if($unions)
-            {
-                foreach($unions as $union) {
-                    foreach($union as $unionBuilder) {
-                        if($unionBuilder) {
+            if ($unions) {
+                foreach ($unions as $union) {
+                    foreach ($union as $unionBuilder) {
+                        if ($unionBuilder) {
                             $unionBuilder->withSum($relation, $colum);
                         }
                     }
@@ -140,5 +138,12 @@ class BaseJsonResource extends JsonResource
         }
 
         return $model;
+    }
+
+    public function translate($field)
+    {
+        $lang = app()->getLocale();
+
+        return $field[$lang] ?? null;
     }
 }

@@ -18,7 +18,7 @@ class ApartmentPhotoDetails extends BaseJsonResource
     {
         return [
             'medium' => new MediumLight($this->medium),
-            'apartment' => new ApartmentLight($this->apartment),
+            // 'apartment' => new ApartmentLight($this->apartment),
             'order' => $this->order,
             'is_main' => $this->is_main,
         ];
