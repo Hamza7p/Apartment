@@ -23,7 +23,6 @@ abstract class CrudService
     public function getAll(?BaseFilter $filter = null): Builder
     {
         $query = $this->getQuery();
-
         return $filter->apply($query);
     }
 
