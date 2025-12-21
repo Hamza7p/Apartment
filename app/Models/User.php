@@ -79,17 +79,16 @@ class User extends BaseModel implements Authenticatable
         return $this->role->value === RoleName::admin->value;
     }
 
-<<<<<<< HEAD
     public function favoriteApartments()
     {
         return $this->belongsToMany(Apartment::class, 'favorites');
-=======
+    }
+
     /**
      * Get the notifications for the user.
      */
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class);
->>>>>>> 9bf36a3d57ddf14682f5209546a90751d3fcd124
     }
 }
