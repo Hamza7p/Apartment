@@ -22,19 +22,19 @@ class Medium extends BaseModel
 
     protected $casts = [
         'type' => MediumType::class,
-        'for' => MediumFor::class
+        'for' => MediumFor::class,
     ];
 
     protected function url(): Attribute
     {
         return Attribute::make(
             get: function () {
-                if (!Storage::disk('public')->exists($this->path)) {
+                if (! Storage::disk('public')->exists($this->path)) {
                     return asset(Storage::url('_11284e3b-18a9-46f4-aa14-d2df754fc8cb.jpg'));
                 }
+
                 return asset(Storage::url($this->path));
             },
         );
     }
-   
 }

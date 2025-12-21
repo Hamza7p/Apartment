@@ -26,7 +26,7 @@ abstract class CrudService
         return $filter->apply($query);
     }
 
-    public function find(mixed $id): BaseModel
+    public function find(mixed $id): ?BaseModel
     {
         if ($id instanceof BaseModel) {
             return $id;
@@ -44,6 +44,7 @@ abstract class CrudService
     {
         $model = $this->find($id);
         $model->update($data);
+
         return $model;
     }
 

@@ -2,9 +2,9 @@
 
 namespace App\Http\Services;
 
-use App\Models\Medium;
 use App\Http\Services\Base\CrudService;
 use App\Models\Base\BaseModel;
+use App\Models\Medium;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -20,7 +20,7 @@ class MediumService extends CrudService
         /** @var \Illuminate\Http\UploadedFile $medium */
         $medium = $data['medium'];
 
-        $path = 'media/' . str_replace('-', '/', $data['for']);
+        $path = 'media/'.str_replace('-', '/', $data['for']);
         $mediumName = $medium->hashName();
         $extension = $medium->getClientOriginalExtension();
         $originName = $medium->getClientOriginalName();
@@ -32,7 +32,7 @@ class MediumService extends CrudService
         );
 
         return parent::create([
-            'path' => $path . '/' . $mediumName,
+            'path' => $path.'/'.$mediumName,
             'extension' => $extension,
             'for' => $data['for'],
             'type' => $data['type'],
@@ -54,15 +54,14 @@ class MediumService extends CrudService
         });
     }
 
-
     public function destroy(mixed $medium): void
     {
-        if (!$medium instanceof Medium) {
+        if (! $medium instanceof Medium) {
             $medium = Medium::findorfail($medium);
         }
 
-        if (Storage::exists($medium->disk->value . '/' . $medium->path)) {
-            Storage::delete($medium->disk->value . '/' . $medium->path);
+        if (Storage::exists($medium->disk->value.'/'.$medium->path)) {
+            Storage::delete($medium->disk->value.'/'.$medium->path);
             $medium->delete();
         }
     }

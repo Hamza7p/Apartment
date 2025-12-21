@@ -12,12 +12,12 @@ class UserLight extends BaseJsonResource
      *
      * @return array<string, mixed>
      */
-
-     protected static function relations(): array
-     {
+    protected static function relations(): array
+    {
         return [
         ];
-     }
+    }
+
     public function toArray(Request $request): array
     {
         return [
