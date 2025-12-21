@@ -9,6 +9,7 @@ use App\Enums\User\UserStatus;
 use App\Models\Base\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
@@ -35,6 +36,7 @@ class User extends BaseModel implements Authenticatable
         'username',
         'role',
         'status',
+        'fcm_token',
         // 'verified_at',
     ];
 
@@ -75,5 +77,13 @@ class User extends BaseModel implements Authenticatable
     public function isAdmin(): bool
     {
         return $this->role->value === RoleName::admin->value;
+    }
+
+    /**
+     * Get the notifications for the user.
+     */
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class);
     }
 }
