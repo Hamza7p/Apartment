@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Notification\NotificationType;
 use App\Models\Base\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -42,6 +43,7 @@ class Notification extends BaseModel
             'read_at' => 'datetime',
             'fcm_sent' => 'boolean',
             'fcm_sent_at' => 'datetime',
+            'type' => NotificationType::class
         ];
     }
 

@@ -8,15 +8,12 @@ enum NotificationType: string
 {
     use EnumToArray;
 
-    case RESERVATION_APPROVED = 'reservation_approved';
-    case RESERVATION_REJECTED = 'reservation_rejected';
-    case RESERVATION_PENDING = 'reservation_pending';
-    case APARTMENT_LISTED = 'apartment_listed';
-    case APARTMENT_UPDATED = 'apartment_updated';
-    case REVIEW_RECEIVED = 'review_received';
-    case USER_APPROVED = 'user_approved';
-    case USER_REJECTED = 'user_rejected';
-    case USER_BLOCKED = 'user_blocked';
-    case GENERAL = 'general';
+    case user_registration = 'user_registration';
+    case user_update_id_photo = 'user_update_id_photo';
+    case change_user_status = 'change_user_status';
+    case reservation_request = 'reservation_request';
+    case reservation_approved = 'reservation_approved';
+    case reservation_modified = 'reservation_modified';
+    case review_apartment = 'review_apartment';
 }
 

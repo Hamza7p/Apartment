@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Filters\UserFilter;
+use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\User\UserDetails;
 use App\Http\Resources\User\UserList;
 use App\Http\Services\UserService;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -48,5 +50,11 @@ class UserController extends Controller
     {
         $this->userService->delete($user);
         return response()->noContent();
+    }
+
+    public function updateProfile(UpdateProfileRequest $request)
+    {
+        $user = $this->userService->update(Auth::user(), $request->validated());
+        return new UserDetails($user);
     }
 }

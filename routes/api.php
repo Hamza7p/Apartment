@@ -6,7 +6,9 @@ use App\Http\Controllers\ApartmentPhotoController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\MediumController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\SystemController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +17,7 @@ Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('me', [AuthController::class, 'me']);
+    Route::post('update-profile', [UserController::class, 'updateProfile']);
 });
 
 Route::post('apartment/{apartmentId}/photo', [ApartmentPhotoController::class, 'store']);
@@ -38,4 +41,10 @@ Route::post('media/store-many', [MediumController::class, 'storeMultiple']);
 Route::get('governorates', function () {
     return Governorate::allLabels();
 });
+Route::get('notifications', [NotificationController::class, 'index']);
+Route::post('notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+
+
+// for admin dashboard 
+Route::get('system-data', [SystemController::class, 'getData']);
 Route::apiResource('users', UserController::class);
