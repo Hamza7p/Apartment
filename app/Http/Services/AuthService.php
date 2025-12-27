@@ -16,6 +16,8 @@ class AuthService  //extends CrudService
             'status' => UserStatus::pending->value,
         ]);
         $user = User::query()->create($data);
+        
+        
        
         return [
             'token' => $this->createToken($user),

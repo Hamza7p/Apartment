@@ -19,4 +19,9 @@ enum NotificationType: string
     case USER_REJECTED = 'user_rejected';
     case USER_BLOCKED = 'user_blocked';
     case GENERAL = 'general';
+    case user_registration = 'user_registration';
+    case user_update_id_photo = 'user_update_id_photo';
+    case change_user_status = 'change_user_status';
+    case reservation_modified = 'reservation_modified';
+    case review_apartment = 'review_apartment';
 }
