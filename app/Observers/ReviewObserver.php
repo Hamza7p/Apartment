@@ -4,7 +4,7 @@ namespace App\Observers;
 
 use App\Models\Review;
 
-class ReviewOpserver
+class ReviewObserver
 {
     /**
      * Handle the Review "created" event.
@@ -50,9 +50,14 @@ class ReviewOpserver
     {
         $apartment = $review->apartment;
 
-        if ($apartment) {
+        if (! $apartment) {
+            return;
+        }
+
+        $newRate = $apartment->reviews()->avg('rate');
+        if ($apartment->rate != $newRate) {
             $apartment->rate = $apartment->reviews()->avg('rate');
-            $apartment->save();
+            $apartment->saveQuietly();
         }
     }
 }

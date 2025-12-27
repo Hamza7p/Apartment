@@ -5,4 +5,6 @@ return
         'account_not_approved' => 'لم يتم تفعيل حسابك بعد',
         'unauthorized' => 'غير مصرّح',
         'not_found' => 'لم يتم العثور على :model',
+
+        'apartment_not_available' => 'الشقة غير متاحة في هذا التاريخ',
     ];

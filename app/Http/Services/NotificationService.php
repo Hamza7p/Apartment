@@ -5,21 +5,12 @@ namespace App\Http\Services;
 use App\Jobs\SendNotificationJob;
 use App\Models\Notification;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class NotificationService
 {
     /**
      * Send a notification to a user.
-     *
-     * @param User|int $user
-     * @param string $type
-     * @param string $title
-     * @param string $body
-     * @param array|null $data
-     * @param string|null $fcmToken
-     * @return void
      */
     public function send(
         User|int $user,
@@ -35,12 +26,7 @@ class NotificationService
     /**
      * Send notifications to multiple users.
      *
-     * @param array<User|int> $users
-     * @param string $type
-     * @param string $title
-     * @param string $body
-     * @param array|null $data
-     * @return void
+     * @param  array<User|int>  $users
      */
     public function sendToMany(
         array $users,
@@ -57,10 +43,7 @@ class NotificationService
     /**
      * Get user's notifications.
      *
-     * @param User|int $user
-     * @param bool|null $read Filter by read status (null = all)
-     * @param int $perPage
-     * @return LengthAwarePaginator
+     * @param  bool|null  $read  Filter by read status (null = all)
      */
     public function getUserNotifications(
         User|int $user,
@@ -81,9 +64,6 @@ class NotificationService
 
     /**
      * Get unread notifications count for a user.
-     *
-     * @param User|int $user
-     * @return int
      */
     public function getUnreadCount(User|int $user): int
     {
@@ -96,10 +76,6 @@ class NotificationService
 
     /**
      * Mark notification as read.
-     *
-     * @param int $notificationId
-     * @param User|int $user
-     * @return bool
      */
     public function markAsRead(int $notificationId, User|int $user): bool
     {
@@ -111,6 +87,7 @@ class NotificationService
 
         if ($notification) {
             $notification->markAsRead();
+
             return true;
         }
 
@@ -120,7 +97,6 @@ class NotificationService
     /**
      * Mark all notifications as read for a user.
      *
-     * @param User|int $user
      * @return int Number of notifications marked as read
      */
     public function markAllAsRead(User|int $user): int
@@ -137,10 +113,6 @@ class NotificationService
 
     /**
      * Delete a notification.
-     *
-     * @param int $notificationId
-     * @param User|int $user
-     * @return bool
      */
     public function delete(int $notificationId, User|int $user): bool
     {
@@ -151,4 +123,3 @@ class NotificationService
             ->delete() > 0;
     }
 }
-

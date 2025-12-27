@@ -24,6 +24,7 @@ return new class extends Migration
             $table->json('city');
             $table->json('address');
             $table->string('status')->default(ApartmentStatus::AVAILABLE->value); // enum: available, reserved, under_maintenance
+            $table->dateTime('available_at')->nullable();
             $table->unsignedInteger('number_of_room');
             $table->unsignedInteger('number_of_bathroom');
             $table->unsignedInteger('area');

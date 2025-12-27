@@ -5,9 +5,11 @@ namespace App\Models;
 use App\Enums\Apartment\ApartmentStatus;
 use App\Enums\Apartment\Governorate;
 use App\Models\Base\BaseModel;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Apartment extends BaseModel
 {
+    use HasFactory;
     protected $fillable = [
         'user_id',
         'title',
@@ -19,6 +21,7 @@ class Apartment extends BaseModel
         'city',
         'address',
         'status',
+        'available_at',
         'number_of_room',
         'number_of_bathroom',
         'area',
@@ -38,6 +41,7 @@ class Apartment extends BaseModel
 
         'governorate' => Governorate::class,
         'status' => ApartmentStatus::class,
+        'available_at' => 'datetime',
     ];
 
     public function owner()
@@ -58,5 +62,10 @@ class Apartment extends BaseModel
     public function photos()
     {
         return $this->hasMany(ApartmentPhoto::class);
+    }
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
     }
 }

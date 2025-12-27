@@ -5,8 +5,8 @@ namespace App\Providers;
 use App\Filters\Base\FilterDataProvider;
 use App\Filters\Base\HttpFilterDataAdapter;
 use App\Models\Review;
-use App\Observers\ReviewOpserver;
 use App\Models\User;
+use App\Observers\ReviewObserver;
 use App\Observers\UserObserver;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Review::observe(ReviewOpserver::class);
+        Review::observe(ReviewObserver::class);
         User::observe(UserObserver::class);
     }
 }

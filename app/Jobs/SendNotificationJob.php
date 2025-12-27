@@ -41,8 +41,9 @@ class SendNotificationJob implements ShouldQueue
             // Resolve user if it's an ID
             if (is_int($this->user)) {
                 $user = User::find($this->user);
-                if (!$user) {
+                if (! $user) {
                     Log::warning("User not found for notification: {$this->user}");
+
                     return;
                 }
             } else {
@@ -65,14 +66,14 @@ class SendNotificationJob implements ShouldQueue
             // When FCM is ready, uncomment and implement:
             // $this->sendFcmNotification($notification, $user);
 
-            Log::info("Notification created successfully", [
+            Log::info('Notification created successfully', [
                 'notification_id' => $notification->id,
                 'user_id' => $user->id,
                 'type' => $this->type,
             ]);
 
         } catch (\Exception $e) {
-            Log::error("Failed to send notification", [
+            Log::error('Failed to send notification', [
                 'user_id' => is_int($this->user) ? $this->user : $this->user->id,
                 'type' => $this->type,
                 'error' => $e->getMessage(),
@@ -84,10 +85,6 @@ class SendNotificationJob implements ShouldQueue
 
     /**
      * Send FCM notification (to be implemented in the future).
-     * 
-     * @param Notification $notification
-     * @param User $user
-     * @return void
      */
     protected function sendFcmNotification(Notification $notification, User $user): void
     {
@@ -96,7 +93,7 @@ class SendNotificationJob implements ShouldQueue
         /*
         try {
             $fcmToken = $notification->fcm_token ?? $user->fcm_token;
-            
+
             if (!$fcmToken) {
                 Log::warning("No FCM token found for user", ['user_id' => $user->id]);
                 return;
@@ -118,7 +115,7 @@ class SendNotificationJob implements ShouldQueue
             $notification->update([
                 'fcm_error' => $e->getMessage(),
             ]);
-            
+
             Log::error("FCM notification failed", [
                 'notification_id' => $notification->id,
                 'error' => $e->getMessage(),
@@ -132,11 +129,10 @@ class SendNotificationJob implements ShouldQueue
      */
     public function failed(\Throwable $exception): void
     {
-        Log::error("SendNotificationJob failed", [
+        Log::error('SendNotificationJob failed', [
             'user_id' => is_int($this->user) ? $this->user : $this->user->id,
             'type' => $this->type,
             'error' => $exception->getMessage(),
         ]);
     }
 }
-

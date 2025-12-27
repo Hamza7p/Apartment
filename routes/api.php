@@ -6,6 +6,8 @@ use App\Http\Controllers\ApartmentPhotoController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\MediumController;
+use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\ReservationRequestController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -39,3 +41,6 @@ Route::get('governorates', function () {
     return Governorate::allLabels();
 });
 Route::apiResource('users', UserController::class);
+
+Route::apiResource('reservation-requests', ReservationRequestController::class);
+Route::post('reservation/accept/{id}', [ReservationController::class, 'accept']);

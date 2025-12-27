@@ -2,33 +2,46 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\ReservationRequestFilter;
+use App\Http\Requests\ReservationRequest as RequestsReservationRequest;
+use App\Http\Resources\Reservation\ReservationRequestDetails;
+use App\Http\Services\ReservationRequestService;
 use App\Models\ReservationRequest;
 use Illuminate\Http\Request;
 
 class ReservationRequestController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
+    private ReservationRequestService $reservationRequestService;
+
+    private ReservationRequestFilter $reservationRequestFilter;
+
+    public function __construct(
+        ReservationRequestService $reservationRequestService,
+        ReservationRequestFilter $reservationRequestFilter
+    ) {
+        $this->reservationRequestService = $reservationRequestService;
+        $this->reservationRequestFilter = $reservationRequestFilter;
+        $this->middleware(['auth:sanctum', 'isApproved', 'setLocale']);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display a listing of the resource.
      */
-    public function create()
+    public function index(ReservationRequestFilter $filter)
     {
-        //
+        $reservationRequests = $this->reservationRequestService->getAll($filter);
+
+        return ReservationRequestDetails::query($reservationRequests);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(RequestsReservationRequest $request)
     {
-        //
+        $query = $this->reservationRequestService->create($request->validated());
+
+        return new ReservationRequestDetails($query);
     }
 
     /**

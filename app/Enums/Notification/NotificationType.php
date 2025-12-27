@@ -11,6 +11,7 @@ enum NotificationType: string
     case RESERVATION_APPROVED = 'reservation_approved';
     case RESERVATION_REJECTED = 'reservation_rejected';
     case RESERVATION_PENDING = 'reservation_pending';
+    case RESERVATION_REQUEST = 'reservation_request';
     case APARTMENT_LISTED = 'apartment_listed';
     case APARTMENT_UPDATED = 'apartment_updated';
     case REVIEW_RECEIVED = 'review_received';
@@ -19,4 +20,3 @@ enum NotificationType: string
     case USER_BLOCKED = 'user_blocked';
     case GENERAL = 'general';
 }
-
