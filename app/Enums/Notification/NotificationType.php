@@ -4,16 +4,17 @@ namespace App\Enums\Notification;
 
 use App\Enums\Base\EnumToArray;
 
-enum NotificationType: string
+enum NotificationType: int
 {
     use EnumToArray;
 
-    case user_registration = 'user_registration';
-    case user_update_id_photo = 'user_update_id_photo';
-    case change_user_status = 'change_user_status';
-    case reservation_request = 'reservation_request';
-    case reservation_approved = 'reservation_approved';
-    case reservation_modified = 'reservation_modified';
-    case review_apartment = 'review_apartment';
+    case general_notification = 1;
+    case users = 2;
+    case user_status = 3;
+    case apartments = 4;
+    case reviews = 5;
+    case reservations = 6;
+    case reservation_requests = 7;
+    case reservation_approvals = 8;
 }
 
