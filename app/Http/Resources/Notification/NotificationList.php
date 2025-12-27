@@ -17,7 +17,7 @@ class NotificationList extends BaseJsonResource
     {
         return [
             'id' => $this->id,
-            // {{ attributes }}
+            {{ attributes }}
 
         ];
     }
