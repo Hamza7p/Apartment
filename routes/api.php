@@ -46,7 +46,6 @@ Route::get('governorates', function () {
 Route::get('notifications', [NotificationController::class, 'index']);
 Route::post('notifications/{id}/read', [NotificationController::class, 'markAsRead']);
 
-
 // for admin dashboard
 Route::get('system-data', [SystemController::class, 'getData']);
 Route::apiResource('users', UserController::class);
