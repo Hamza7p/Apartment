@@ -28,7 +28,7 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request): LoginDetails
     {
-        $data = $this->authService->login($request->all());
+        $data = $this->authService->login($request->validated());
         return new LoginDetails($data);
     }
 
