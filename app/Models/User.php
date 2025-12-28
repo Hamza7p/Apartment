@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Ramsey\Collection\Collection;
 
 class User extends BaseModel implements Authenticatable
 {
@@ -77,6 +78,11 @@ class User extends BaseModel implements Authenticatable
     public function isAdmin(): bool
     {
         return $this->role->value === RoleName::admin->value;
+    }
+
+    public function scopeAdmins($query)
+    {
+        return $query->where('role', RoleName::admin->value);
     }
 
     public function favoriteApartments()

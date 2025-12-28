@@ -2,21 +2,24 @@
 
 namespace {{ namespace }};
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use App\Notifications\Base\BaseNotification;
 
-class {{ class }} extends Notification
+class {{ class }} extends BaseNotification
 {
-    use Queueable;
 
     /**
      * Create a new notification instance.
      */
     public function __construct()
     {
-        //
+        parent::__construct();
+    }
+
+    public function getType(): int
+    {
+        return NotificationType::users->value;
     }
 
     /**
@@ -26,26 +29,23 @@ class {{ class }} extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['database', 'fcm'];
     }
 
-    /**
-     * Get the mail representation of the notification.
+   /**
+     * Database channel
      */
-    public function toMail(object $notifiable): MailMessage
+    public function toDatabase(object $notifiable): array
     {
-        return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
+        return [
+            //
+        ];
     }
 
     /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
+     * FCM channel
      */
-    public function toArray(object $notifiable): array
+    public function toFcm(object $notifiable): array
     {
         return [
             //

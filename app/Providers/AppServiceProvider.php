@@ -7,7 +7,10 @@ use App\Filters\Base\HttpFilterDataAdapter;
 use App\Models\Review;
 use App\Observers\ReviewOpserver;
 use App\Models\User;
+use App\Notifications\Channels\DatabaseChannel;
+use App\Notifications\Channels\FcmChannel;
 use App\Observers\UserObserver;
+use Illuminate\Notifications\ChannelManager;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,5 +30,9 @@ class AppServiceProvider extends ServiceProvider
     {
         Review::observe(ReviewOpserver::class);
         User::observe(UserObserver::class);
+
+        $this->app->make(ChannelManager::class)->extend('fcm', fn ($app) => new FcmChannel());
+        $this->app->make(ChannelManager::class)->extend('database', fn ($app) => new DatabaseChannel());
+        
     }
 }

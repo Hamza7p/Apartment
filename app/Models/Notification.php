@@ -17,6 +17,7 @@ class Notification extends BaseModel
      * @var list<string>
      */
     protected $fillable = [
+        'id',
         'user_id',
         'type',
         'title',
@@ -50,30 +51,6 @@ class Notification extends BaseModel
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    /**
-     * Mark the notification as read.
-     */
-    public function markAsRead(): void
-    {
-        if (!$this->read) {
-            $this->update([
-                'read' => true,
-                'read_at' => now(),
-            ]);
-        }
-    }
-
-    /**
-     * Mark the notification as unread.
-     */
-    public function markAsUnread(): void
-    {
-        $this->update([
-            'read' => false,
-            'read_at' => null,
-        ]);
     }
 }
 

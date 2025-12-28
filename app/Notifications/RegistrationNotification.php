@@ -2,53 +2,64 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
+use App\Enums\Notification\NotificationType;
+use App\Models\User;
+use App\Notifications\Base\BaseNotification;
 
-class RegistrationNotification extends Notification implements ShouldQueue
+class RegistrationNotification extends BaseNotification
 {
-    use Queueable;
+    public function __construct(
+        private User $user
+    ) {
+        parent::__construct();
+    }
 
-    /**
-     * Create a new notification instance.
-     */
-    public function __construct()
+    public function getType(): int
     {
-        //
+        return NotificationType::users->value;
     }
 
     /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
+     * Channels
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['database', 'fcm'];
     }
 
     /**
-     * Get the mail representation of the notification.
+     * Shared payload
      */
-    public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
-    }
-
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(object $notifiable): array
+    protected function payload(): array
     {
         return [
-            //
+            'title' => [
+                'en' => __('messages.register.title', locale: 'en'),
+                'ar' => __('messages.register.title', locale: 'ar'),
+            ],
+            'body' => [
+                'en' => __('messages.register.body', ['id' => $this->user->id, 'name' => $this->user->first_name], 'en'),
+                'ar' => __('messages.register.body', ['id' => $this->user->id, 'name' => $this->user->first_name], 'ar'),
+            ],
+            'data' => [
+                'item_id' => $this->user->id,
+            ],
         ];
+    }
+
+    /**
+     * Database channel
+     */
+    public function toDatabase(object $notifiable): array
+    {
+        return $this->payload();
+    }
+
+    /**
+     * FCM channel
+     */
+    public function toFcm(object $notifiable): array
+    {
+        return $this->payload();
     }
 }

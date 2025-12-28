@@ -5,6 +5,8 @@ namespace App\Http\Services;
 use App\Enums\Role\RoleName;
 use App\Enums\User\UserStatus;
 use App\Models\User;
+use App\Notifications\RegistrationNotification;
+use Illuminate\Support\Facades\Notification;
 
 class AuthService  //extends CrudService
 {
@@ -17,7 +19,7 @@ class AuthService  //extends CrudService
         ]);
         $user = User::query()->create($data);
         
-        
+        Notification::send(User::admins()->get(), new RegistrationNotification($user));
        
         return [
             'token' => $this->createToken($user),
