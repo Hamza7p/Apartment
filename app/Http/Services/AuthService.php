@@ -7,6 +7,7 @@ use App\Enums\User\UserStatus;
 use App\Models\User;
 use App\Notifications\RegistrationNotification;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Hash;
 
 class AuthService  //extends CrudService
 {
@@ -30,8 +31,8 @@ class AuthService  //extends CrudService
     public function login(array $data)
     {
         $user = User::where('phone', $data['phone'])->first();
-        if (! $user) {
-            throw new \Exception('User not found');
+        if (! $user || ! Hash::check($data['password'], $user->password)) {
+            abort(401, __('exceptions.invalid_credentials'));
         }
 
         return [
