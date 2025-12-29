@@ -2,16 +2,36 @@
 
 namespace App\Http\Services;
 
-class NotificationService
+use App\Filters\Base\BaseFilter;
+use App\Http\Services\Base\CrudService;
+use App\Models\Notification;
+use App\Models\User;
+
+class NotificationService extends CrudService
 {
-    public function getUserNotifications($user, $unreadOnly = false)
+    protected function getModelClass(): string
     {
-        $query = $user->notifications();
+        return Notification::class;
+    }
 
-        if ($unreadOnly) {
-            $query->whereNull('read_at');
-        }
+    public function getUserNotifications(User $user, BaseFilter $filter)
+    {
+        return parent::getAll($filter, function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        });
+    }
 
-        return $query->get();
+    public function markAsRead(User $user)
+    {
+        Notification::where('user_id', $user->id)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+    }
+
+    public function getUnreadCount(User $user)
+    {
+        return Notification::where('user_id', $user->id)
+            ->whereNull('read_at')
+            ->count();
     }
 }

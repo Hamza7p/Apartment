@@ -57,4 +57,11 @@ class AuthService  //extends CrudService
     {
         return User::query()->find($user->id);
     }
+
+    public function resetPassword(User $user, array $data)
+    {
+        $user->update([
+            'password' => Hash::make($data['password']),
+        ]);
+    }
 }

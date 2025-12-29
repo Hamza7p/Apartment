@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\Role\RoleName;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\Auth\LoginDetails;
 use App\Http\Resources\User\UserDetails;
 use App\Http\Services\AuthService;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\ResetPasswordRequest;
 
 class AuthController extends Controller
 {
@@ -17,7 +17,7 @@ class AuthController extends Controller
     public function __construct(AuthService $authService)
     {
         $this->authService =  $authService;
-        $this->middleware('auth:sanctum')->only(['logout', 'me']);
+        $this->middleware('auth:sanctum')->only(['logout', 'me', 'resetPassword']);
     }
 
     public function register(RegisterRequest $request): LoginDetails
@@ -44,5 +44,12 @@ class AuthController extends Controller
     {
         $user = $this->authService->me(Auth::user());
         return new UserDetails($user);
+    }
+
+    public function resetPassword(ResetPasswordRequest $request)
+    {
+        $user = Auth::user();
+        $this->authService->resetPassword($user, $request->validated());
+        return response()->noContent();
     }
 }
