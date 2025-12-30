@@ -17,17 +17,13 @@ class Notification extends BaseModel
      * @var list<string>
      */
     protected $fillable = [
+        'id',
         'user_id',
         'type',
         'title',
         'body',
         'data',
-        'read',
         'read_at',
-        'fcm_token',
-        'fcm_sent',
-        'fcm_sent_at',
-        'fcm_error',
     ];
 
     /**
@@ -39,13 +35,15 @@ class Notification extends BaseModel
     {
         return [
             'data' => 'array',
-            'read' => 'boolean',
             'read_at' => 'datetime',
-            'fcm_sent' => 'boolean',
-            'fcm_sent_at' => 'datetime',
             'type' => NotificationType::class
         ];
     }
+
+    protected array $translatable = [
+        'title',
+        'body',
+    ];
 
     /**
      * Get the user that owns the notification.
@@ -53,30 +51,6 @@ class Notification extends BaseModel
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    /**
-     * Mark the notification as read.
-     */
-    public function markAsRead(): void
-    {
-        if (!$this->read) {
-            $this->update([
-                'read' => true,
-                'read_at' => now(),
-            ]);
-        }
-    }
-
-    /**
-     * Mark the notification as unread.
-     */
-    public function markAsUnread(): void
-    {
-        $this->update([
-            'read' => false,
-            'read_at' => null,
-        ]);
     }
 }
 

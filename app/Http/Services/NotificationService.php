@@ -1,14 +1,19 @@
-<?php
+<?php 
 
 namespace App\Http\Services;
 
-use App\Jobs\SendNotificationJob;
+use App\Filters\Base\BaseFilter;
+use App\Http\Services\Base\CrudService;
 use App\Models\Notification;
 use App\Models\User;
+<<<<<<< HEAD
 use Illuminate\Pagination\LengthAwarePaginator;
+=======
+>>>>>>> origin/main
 
-class NotificationService
+class NotificationService extends CrudService
 {
+<<<<<<< HEAD
     /**
      * Send a notification to a user.
      */
@@ -66,13 +71,34 @@ class NotificationService
      * Get unread notifications count for a user.
      */
     public function getUnreadCount(User|int $user): int
+=======
+    protected function getModelClass(): string
+>>>>>>> origin/main
     {
-        $userId = is_int($user) ? $user : $user->id;
+        return Notification::class;
+    }
 
-        return Notification::where('user_id', $userId)
-            ->where('read', false)
+    public function getUserNotifications(User $user, BaseFilter $filter)
+    {
+        return parent::getAll($filter, function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        });
+    }
+
+    public function markAsRead(User $user)
+    {
+        Notification::where('user_id', $user->id)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+    }
+
+    public function getUnreadCount(User $user)
+    {
+        return Notification::where('user_id', $user->id)
+            ->whereNull('read_at')
             ->count();
     }
+<<<<<<< HEAD
 
     /**
      * Mark notification as read.
@@ -123,3 +149,6 @@ class NotificationService
             ->delete() > 0;
     }
 }
+=======
+}
+>>>>>>> origin/main

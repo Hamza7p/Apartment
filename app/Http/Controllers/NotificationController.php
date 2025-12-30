@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Filters\NotificationFilter;
 use App\Http\Resources\Notification\NotificationList;
 use App\Http\Services\NotificationService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
@@ -18,20 +17,27 @@ class NotificationController extends Controller
         $this->middleware('auth:sanctum');
     }
 
-    public function index()
+    public function index(NotificationFilter $filter)
     {
         $user = Auth::user();
-        $notifications = $this->notificationService->getUserNotifications($user, false);
+        $notifications = $this->notificationService->getUserNotifications($user, $filter);
 
-        return new NotificationList($notifications);
+        return NotificationList::query($notifications);
     }
 
-    public function markAsRead(Request $request, $id)
+    public function markAsRead()
     {
-        $user = $request->user();
-        $notification = $user->notifications()->where('id', $id)->firstOrFail();
-        $notification->markAsRead();
+        $user = Auth::user();
+        $this->notificationService->markAsRead($user);
 
-        return response()->json(['message' => 'Notification marked as read.']);
+        return response()->noContent();
+    }
+
+    public function getUnreadCount()
+    {
+        $user = Auth::user();
+        $unreadCount = $this->notificationService->getUnreadCount($user);
+
+        return response()->json(['unread_count' => $unreadCount]);
     }
 }
