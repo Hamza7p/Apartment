@@ -17,13 +17,8 @@ class NotificationList extends BaseJsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->title,
-            'body' => $this->body,
-            'type' => $this->type,
-            'data' => $this->data,
-            'read_at' => $this->read_at,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            // {{ attributes }}
+
         ];
     }
 }

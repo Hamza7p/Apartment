@@ -5,34 +5,42 @@ namespace App\Filters;
 use App\Filters\Base\BaseFilter;
 use Illuminate\Database\Eloquent\Builder;
 
-class ReviewFilter extends BaseFilter
+class ReservationFilter extends BaseFilter
 {
     public function attributesMap(): array
     {
         return [
-            'rate',
+            'reservation_request_id',
             'user_id',
             'apartment_id',
+            'start_date',
+            'end_date',
+            'total_amount',
+            'status',
+
         ];
     }
 
     protected function search(Builder $builder, string $keyword): Builder
     {
         $locale = app()->getLocale();
+
         $keyword = '%'.$keyword.'%';
 
-        return $builder->where(function (Builder $query) use ($locale, $keyword) {
-            $query->where("comment->$locale", 'LIKE', $keyword);
+        $builder->where(function ($query) {
+            /** @var Builder $query */
         });
+
+        return $builder;
     }
 
     public function defaultOrder(Builder $builder): Builder
     {
-        return $builder->orderBy($this->tableName().'.created_at', 'desc');
+        return $builder->orderBy($this->tableName().'.'.'created_at', 'desc');
     }
 
     public function tableName()
     {
-        return 'reviews';
+        return 'reservations';
     }
 }

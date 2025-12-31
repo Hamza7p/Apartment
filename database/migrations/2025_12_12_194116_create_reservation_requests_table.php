@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Reservation\ReservationStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,7 +18,8 @@ return new class extends Migration
             $table->foreignId('apartment_id')->constrained()->cascadeOnDelete();
             $table->date('start_date');
             $table->date('end_date');
-            $table->text('note')->nullable;
+            $table->string('status')->default(ReservationStatus::PENDING->value); // enum('pending','accepted','rejected')
+            $table->text('note')->nullable();
             $table->timestamps();
         });
     }

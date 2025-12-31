@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums\Reversation;
+namespace App\Enums\Reservation;
 
 enum ReservationStatus: string
 {
@@ -8,4 +8,8 @@ enum ReservationStatus: string
     case ACTIVE = 'active';
     case ENDED = 'ended';
     case CANCELED = 'canceled';
+    case CANCEL_REQUEST = 'cancel_request';
+    case ACCEPTED = 'accepted';
+    case REJECTED = 'rejected';
 }
+

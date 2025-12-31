@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\User\UserStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -24,11 +25,19 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'phone' => fake()->unique(),
-            'verified_at' => now(),
+            'first_name' => fake()->name(),
+            'last_name' => fake()->name(),
+            'username' => fake()->unique()->userName(),
+            'date_of_birth' => fake()->date(),
+            'role' => fake()->randomElement(['user', 'admin']),
+            'id_photo' => null,
+            'personal_photo' => null,
+            'phone' => fake()->unique()->numerify('9639########'),
             'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            'status' => UserStatus::approved->value,
+
+            'verified_at' => now(),
+            // 'remember_token' => Str::random(10),
         ];
     }
 

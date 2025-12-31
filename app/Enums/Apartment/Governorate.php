@@ -17,6 +17,7 @@ enum Governorate: int
     case DARA = 11;
     case SUWAYDA = 12;
     case QUNEITRA = 13;
+    case RIF_DIMASHQ = 14;
 
     public function label(?string $locale = null): string
     {
@@ -37,6 +38,7 @@ enum Governorate: int
                 self::DARA => 'درعا',
                 self::SUWAYDA => 'السويداء',
                 self::QUNEITRA => 'القنيطرة',
+                self::RIF_DIMASHQ => 'ريف دمشق',
             },
             default => match ($this) {
                 self::DAMASCUS => 'Damascus',
@@ -52,6 +54,7 @@ enum Governorate: int
                 self::DARA => 'Daraa',
                 self::SUWAYDA => 'As-Suwayda',
                 self::QUNEITRA => 'Quneitra',
+                self::RIF_DIMASHQ => 'Rif Dimashq',
             },
         };
     }
@@ -74,6 +77,7 @@ enum Governorate: int
     public static function fromName(string $name): ?self
     {
         return collect(self::cases())
-            ->first(fn ($g) => $g->label('en') === $name || $g->label('ar') === $name);
+            ->first(fn ($g) => $g->label('en') === $name || $g->label('ar') === $name
+            );
     }
 }
