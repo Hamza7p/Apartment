@@ -42,7 +42,6 @@ class ReservationModificationRequest extends FormRequest
             $reservationId = $this->route('id');
             $reservation = Reservation::findOrFail($reservationId);
 
-            // صلاحيات على أساس نوع التعديل
             $user = $this->user();
             if (in_array($this->type, ['start_date', 'end_date']) && $user->id !== $reservation->user_id) {
                 $validator->errors()->add('type', __('errors.unauthorized'));
@@ -55,7 +54,6 @@ class ReservationModificationRequest extends FormRequest
 
                 return;
             }
-            // تحقق التعارض للحجوزات
             if (in_array($this->type, ['start_date', 'end_date'])) {
                 $newStart = $this->type === 'start_date' ? $this->new_value : $reservation->start_date;
                 $newEnd = $this->type === 'end_date' ? $this->new_value : $reservation->end_date;

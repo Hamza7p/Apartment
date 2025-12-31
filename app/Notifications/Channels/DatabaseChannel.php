@@ -14,14 +14,14 @@ class DatabaseChannel
         }
 
         $payload = $notification->toDatabase($notifiable);
-        
+
         NotificationModel::create([
-            'id'      => $notification->id,
+            'id' => $notification->id,
             'user_id' => $notifiable->id,
-            'type'    => $notification->getType(),
-            'title'   => $payload['title'] ?? [],
-            'body'    => $payload['body'] ?? [],
-            'data'    => $payload['data'] ?? [],
+            'type' => $notification->getType(),
+            'title' => $payload['title'] ?? [],
+            'body' => $payload['body'] ?? [],
+            'data' => $payload['data'] ?? [],
         ]);
     }
 }

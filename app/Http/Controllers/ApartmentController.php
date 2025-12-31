@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\ApartmentFilter;
 use App\Http\Requests\ApartmenRequest;
 use App\Http\Resources\Apartment\ApartmentDetails;
 use App\Http\Services\ApartmentService;
-use App\Filters\ApartmentFilter;
 
 class ApartmentController extends Controller
 {
@@ -15,7 +15,6 @@ class ApartmentController extends Controller
     {
         $this->apartmentService = $apartmentService;
         $this->middleware(['setLocale', 'auth:sanctum', 'isApproved']);
-        // we need to add midellwire here
     }
 
     /**
@@ -23,8 +22,9 @@ class ApartmentController extends Controller
      */
     public function index(ApartmentFilter $filter)
     {
-        $query = $this->apartmentService->getAll($filter);
-        return ApartmentDetails::query($query);
+        $apartments = $this->apartmentService->getAll($filter);
+
+        return ApartmentDetails::query($apartments);
     }
 
     /**

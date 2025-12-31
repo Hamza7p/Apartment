@@ -8,6 +8,7 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\MediumController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\ReservationModificationController;
 use App\Http\Controllers\ReservationRequestController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SystemController;
@@ -32,8 +33,6 @@ Route::post('apartment/{id}/favorite', [FavoriteController::class, 'store']);
 Route::delete('apartment/{id}/favorite', [FavoriteController::class, 'destroy']);
 Route::get('favorites', [FavoriteController::class, 'index']);
 
-Route::apiResource('apartment/{apartmentId}/photo', ApartmentPhotoController::class);
-
 Route::apiResource('apartment/review', ReviewController::class);
 
 Route::apiResource('apartment', ApartmentController::class);
@@ -53,4 +52,12 @@ Route::get('system-data', [SystemController::class, 'getData']);
 Route::apiResource('users', UserController::class);
 
 Route::apiResource('reservation-requests', ReservationRequestController::class);
-Route::post('reservation/accept/{id}', [ReservationController::class, 'accept']);
+
+Route::apiResource('reservations', ReservationController::class);
+Route::post('reservation-requests/{id}/accept', [ReservationController::class, 'accept']);
+Route::post('reservation-requests/{id}/reject', [ReservationController::class, 'reject']);
+
+Route::apiResource('reservation-modifications', ReservationModificationController::class);
+Route::post('reservations/{id}/modifications', [ReservationModificationController::class, 'requestModification']);
+Route::post('modifications/{id}/accept', [ReservationModificationController::class, 'acceptModification']);
+Route::post('modifications/{id}/reject', [ReservationModificationController::class, 'rejectModification']);

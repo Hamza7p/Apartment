@@ -15,5 +15,9 @@ enum NotificationType: int
     case reviews = 5;
     case reservations = 6;
     case reservation_requests = 7;
-    case reservation_approvals = 8;
+    case reservation_accepted = 8;
+    case reservation_rejected = 9;
+    case reservation_modification_requested = 10;
+    case reservation_modification_accepted = 11;
+    case reservation_modification_rejected = 12;
 }

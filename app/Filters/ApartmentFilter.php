@@ -2,10 +2,8 @@
 
 namespace App\Filters;
 
-
 use App\Filters\Base\BaseFilter;
 use Illuminate\Database\Eloquent\Builder;
-
 
 class ApartmentFilter extends BaseFilter
 {
@@ -32,25 +30,24 @@ class ApartmentFilter extends BaseFilter
     protected function search(Builder $builder, string $keyword): Builder
     {
         $locale = app()->getLocale();
+        $keyword = '%'.$keyword.'%';
 
-            $keyword = '%' . $keyword . '%';
+        return $builder->where(function (Builder $query) use ($locale, $keyword) {
+            $query->where("title->$locale", 'LIKE', $keyword)
+                ->orWhere("description->$locale", 'LIKE', $keyword)
+                ->orWhere("city->$locale", 'LIKE', $keyword)
+                ->orWhere("address->$locale", 'LIKE', $keyword);
+        });
 
-            $builder->where(function ($query) use ($locale, $keyword) {
-                    /** @var Builder $query */
-
-            });
-
-            return $builder;
     }
 
-    function defaultOrder(Builder $builder): Builder
+    public function defaultOrder(Builder $builder): Builder
     {
-        return $builder->orderBy($this->tableName() . '.' . 'created_at', 'desc');
+        return $builder->orderBy($this->tableName().'.'.'created_at', 'desc');
     }
 
     public function tableName()
     {
-        return '';
+        return 'apartments';
     }
-
 }

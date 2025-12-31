@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\ReservationFilter;
 use App\Http\Resources\Reservation\ReservationDetails;
+use App\Http\Resources\Reservation\ReservationRequestDetails;
 use App\Http\Services\ReservationService;
-use App\Models\Reservation;
-use Illuminate\Http\Request;
 
 class ReservationController extends Controller
 {
@@ -14,15 +14,27 @@ class ReservationController extends Controller
     public function __construct(ReservationService $reservationService)
     {
         $this->reservationService = $reservationService;
-        $this->middleware(['auth:sanctum', 'isApproved', 'setLocale']);
+        $this->middleware(middleware: ['auth:sanctum', 'isApproved', 'setLocale']);
     }
 
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(ReservationFilter $filter)
     {
-        //
+        $reservations = $this->reservationService->getAll($filter);
+
+        return ReservationDetails::query($reservations);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show($id)
+    {
+        $resrvation = $this->reservationService->find($id);
+
+        return new ReservationDetails($resrvation);
     }
 
     /**
@@ -30,7 +42,6 @@ class ReservationController extends Controller
      */
     public function accept($reservation_request_id)
     {
-        // dd($request->all());
         $reservation = $this->reservationService->accept($reservation_request_id);
 
         return response()->json([
@@ -39,35 +50,13 @@ class ReservationController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Reservation $reservation)
+    public function reject($reservation_request_id)
     {
-        //
-    }
+        $reservation_request = $this->reservationService->reject($reservation_request_id);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Reservation $reservation)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Reservation $reservation)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Reservation $reservation)
-    {
-        //
+        return response()->json([
+            'message' => __('notifications.reservation_rejected_body'),
+            'data' => new ReservationRequestDetails($reservation_request),
+        ]);
     }
 }

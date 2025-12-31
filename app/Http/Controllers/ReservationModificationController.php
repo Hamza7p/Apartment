@@ -2,57 +2,62 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\ReservationModificationFilter;
 use App\Http\Requests\ReservationModificationRequest;
-use App\Http\Services\ReservationService;
-use Illuminate\Http\JsonResponse;
+use App\Http\Resources\Reservation\ReservationModificationDetails;
+use App\Http\Services\ReservationModificationService;
 
 class ReservationModificationController extends Controller
 {
-    protected ReservationService $reservationService;
+    protected ReservationModificationService $reservationModificationService;
 
-    public function __construct(ReservationService $reservationService)
+    public function __construct(ReservationModificationService $reservationModificationService)
     {
-        $this->reservationService = $reservationService;
+        $this->reservationModificationService = $reservationModificationService;
         $this->middleware(middleware: ['auth:sanctum', 'isApproved', 'setLocale']);
 
     }
 
     /**
-     * إرسال طلب تعديل
+     * Display a listing of the resource.
      */
-    public function requestModification(ReservationModificationRequest $request, int $id): JsonResponse
+    public function index(ReservationModificationFilter $filter)
     {
-        $modification = $this->reservationService->requestModification($id, $request->validated());
+        $reservations = $this->reservationModificationService->getAll($filter);
 
-        return response()->json([
-            'message' => __('notifications.reservation_modify_request'),
-            'modification' => $modification,
-        ]);
+        return ReservationModificationDetails::query($reservations);
     }
 
     /**
-     * قبول طلب تعديل
+     * Display the specified resource.
      */
-    public function acceptModification(int $modificationId): JsonResponse
+    public function show($id)
     {
-        $modification = $this->reservationService->acceptModification($modificationId);
+        $resrvation_request = $this->reservationModificationService->find($id);
 
-        return response()->json([
-            'message' => __('notifications.reservation_modify_accepted'),
-            'modification' => $modification,
-        ]);
+        return new ReservationModificationDetails($resrvation_request);
     }
 
-    /**
-     * رفض طلب تعديل
-     */
-    public function rejectModification(int $modificationId): JsonResponse
+    public function requestModification(ReservationModificationRequest $request, int $id)
     {
-        $modification = $this->reservationService->rejectModification($modificationId);
+        $modification = $this->reservationModificationService->requestModification($id, $request->validated());
 
-        return response()->json([
-            'message' => __('notifications.reservation_modify_rejected'),
-            'modification' => $modification,
-        ]);
+        return new ReservationModificationDetails($modification);
+    }
+
+    public function acceptModification(int $modificationId)
+    {
+        $modification = $this->reservationModificationService->acceptModification($modificationId);
+
+        return new ReservationModificationDetails($modification);
+
+    }
+
+    public function rejectModification(int $modificationId)
+    {
+        $modification = $this->reservationModificationService->rejectModification($modificationId);
+
+        return new ReservationModificationDetails($modification);
+
     }
 }

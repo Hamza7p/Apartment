@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\Reversation\ReservationStatus;
+use App\Enums\Reservation\ReservationStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->decimal('total_amount', 10, 2);
-            $table->string('status')->default('active'); // enum: active, cancelled, completed
+            $table->string('status')->default(ReservationStatus::ACTIVE->value); // enum: active, cancelled, completed
             $table->index('user_id');
             $table->index('apartment_id');
             $table->softDeletes();

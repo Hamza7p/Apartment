@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Filters\ReservationRequestFilter;
-use App\Http\Requests\ReservationRequest as RequestsReservationRequest;
+use App\Http\Requests\ReservationRequest;
 use App\Http\Resources\Reservation\ReservationRequestDetails;
 use App\Http\Services\ReservationRequestService;
-use App\Models\ReservationRequest;
-use Illuminate\Http\Request;
 
 class ReservationRequestController extends Controller
 {
@@ -37,7 +35,7 @@ class ReservationRequestController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(RequestsReservationRequest $request)
+    public function store(ReservationRequest $request)
     {
         $query = $this->reservationRequestService->create($request->validated());
 
@@ -47,32 +45,30 @@ class ReservationRequestController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ReservationRequest $reservationRequest)
+    public function show($id)
     {
-        //
-    }
+        $resrvation_request = $this->reservationRequestService->find($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(ReservationRequest $reservationRequest)
-    {
-        //
+        return new ReservationRequestDetails($resrvation_request);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ReservationRequest $reservationRequest)
+    public function update($id, ReservationRequest $request)
     {
-        //
+        $resrvation_request = $this->reservationRequestService->update($id, $request->validated());
+
+        return new ReservationRequestDetails($resrvation_request);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ReservationRequest $reservationRequest)
+    public function destroy($id)
     {
-        //
+        $this->reservationRequestService->cancel($id);
+
+        return response()->noContent();
     }
 }

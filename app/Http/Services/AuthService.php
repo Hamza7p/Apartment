@@ -6,10 +6,10 @@ use App\Enums\Role\RoleName;
 use App\Enums\User\UserStatus;
 use App\Models\User;
 use App\Notifications\RegistrationNotification;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 
-class AuthService  //extends CrudService
+class AuthService  // extends CrudService
 {
     public function register(array $data)
     {
@@ -19,9 +19,9 @@ class AuthService  //extends CrudService
             'status' => UserStatus::pending->value,
         ]);
         $user = User::query()->create($data);
-        
+
         Notification::send(User::admins()->get(), new RegistrationNotification($user));
-       
+
         return [
             'token' => $this->createToken($user),
             'user' => $user,

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\Apartment\ApartmentStatus;
+use App\Enums\Reservation\ReservationStatus;
 use App\Models\Base\BaseModel;
 
 class Reservation extends BaseModel
@@ -20,7 +20,7 @@ class Reservation extends BaseModel
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
-        'status' => ApartmentStatus::class,
+        'status' => ReservationStatus::class,
     ];
 
     public function apartment()

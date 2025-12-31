@@ -10,11 +10,11 @@ class ReservationRequestFilter extends BaseFilter
     public function attributesMap(): array
     {
         return [
-            'user_id' => 'user_id',
-            'apartment_id' => 'apartment_id',
-            'start_date' => 'start_date',
-            'end_date' => 'end_date',
-            'status' => 'status',
+            'user_id',
+            'apartment_id',
+            'start_date',
+            'end_date',
+            'status',
 
         ];
     }

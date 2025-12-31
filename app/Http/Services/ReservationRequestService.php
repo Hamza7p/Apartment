@@ -2,23 +2,17 @@
 
 namespace App\Http\Services;
 
-use App\Enums\Notification\NotificationType;
-use App\Http\Resources\Apartment\ApartmentLight;
-use App\Http\Resources\User\UserLight;
+use App\Enums\Reservation\ReservationStatus;
 use App\Http\Services\Base\CrudService;
 use App\Models\Base\BaseModel;
 use App\Models\ReservationRequest;
+use App\Notifications\Reservation\ReservationRequestNotification as ReservationReservationRequestNotification;
+use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 
 class ReservationRequestService extends CrudService
 {
-    protected NotificationService $notificationService;
-
-    public function __construct(NotificationService $notificationService)
-    {
-        $this->notificationService = $notificationService;
-    }
-
     protected function getModelClass(): string
     {
         return ReservationRequest::class;
@@ -31,18 +25,20 @@ class ReservationRequestService extends CrudService
         $user = $reservation_request->user;
         $apartment = $reservation_request->apartment;
         $owner = $apartment->owner;
-        $this->notificationService->send(
-            $owner,
-            NotificationType::RESERVATION_REQUEST->value,
-            __('notifications.new_reservation_request'),
-            __('notifications.new_reservation-request_body'),
-            [
-                'user' => new UserLight($user),
-                'apartment' => new ApartmentLight($apartment),
-            ]
-        );
+        Notification::send($apartment->owner, new ReservationReservationRequestNotification($reservation_request));
 
         return $reservation_request;
 
+    }
+
+    public function cancel($id)
+    {
+        $reservation_request = ReservationRequest::find($id);
+        if (! $reservation_request) {
+            throw new Exception(__('errors.not_found'));
+        }
+
+        $reservation_request->status = ReservationStatus::CANCELED->value;
+        $reservation_request->saveQuietly();
     }
 }
