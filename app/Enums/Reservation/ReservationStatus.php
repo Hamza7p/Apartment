@@ -11,5 +11,6 @@ enum ReservationStatus: string
     case CANCEL_REQUEST = 'cancel_request';
     case ACCEPTED = 'accepted';
     case REJECTED = 'rejected';
+    case EXPIRED = 'expired';
 }
 
