@@ -32,6 +32,13 @@ class DatabaseSeeder extends Seeder
             'role' => 'user',
         ]);
 
+        $user = User::factory()->create([
+            'phone' => '963991188227',
+            'password' => '123456789',
+            'first_name' => 'mouhamad shaaban',
+            'role' => 'user',
+        ]);
+
         $apartment = Apartment::factory()
             ->available()
             ->create(['user_id' => $owner->id]);
