@@ -22,6 +22,8 @@ Route::prefix('auth')->group(function () {
     Route::get('me', [AuthController::class, 'me']);
     Route::post('update-profile', [UserController::class, 'updateProfile']);
     Route::post('reset-password', [AuthController::class, 'resetPassword']);
+    Route::post('send-otp', [AuthController::class, 'sendOtp']);
+    Route::post('verify-otp', [AuthController::class, 'verifyOtp']);
 });
 
 Route::post('apartment/{apartmentId}/photo', [ApartmentPhotoController::class, 'store']);

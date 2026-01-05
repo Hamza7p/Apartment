@@ -38,7 +38,7 @@ class User extends BaseModel implements Authenticatable
         'role',
         'status',
         'fcm_token',
-        // 'verified_at',
+        'verified_at',
     ];
 
     /**
