@@ -5,7 +5,7 @@ if(!function_exists('generateOtpCode')) {
         if(isLocalEnvironment()) {
             return '12345';
         }
-        return rand(100000, 999999);
+        return rand(10000, 99999);
     }
 }
 
