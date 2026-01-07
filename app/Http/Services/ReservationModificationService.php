@@ -2,12 +2,14 @@
 
 namespace App\Http\Services;
 
+use App\Enums\Apartment\ApartmentStatus;
 use App\Enums\Reservation\ReservationStatus;
 use App\Http\Services\Base\CrudService;
 use App\Models\Reservation;
 use App\Models\ReservationModification;
 use App\Notifications\Reservation\ReservationModificationAcceptedNotification;
 use App\Notifications\Reservation\ReservationModificationRequestNotification;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -74,6 +76,7 @@ class ReservationModificationService extends CrudService
     {
         $modification = ReservationModification::with('reservation.apartment')->findOrFail($modificationId);
         $reservation = $modification->reservation;
+        $apartment = $reservation->apartment;
         $user = Auth::user();
 
         if ($modification->status !== 'pending') {
@@ -119,6 +122,51 @@ class ReservationModificationService extends CrudService
                 $reservation->end_date,
                 $reservation->id
             );
+            // --- Update availability JSON ---
+            $availability = $apartment->availability;
+            $start = Carbon::parse($reservation->start_date);
+            $end = Carbon::parse($reservation->end_date);
+
+            if (! is_array($availability) || empty($availability)) {
+                $availability = [
+                    [
+                        'from' => now()->toDateTimeString(),
+                        'to' => '2099-12-31 23:59:59',
+                    ],
+                ];
+            }
+
+            // Now $availability is always an array
+            $new_availability = [];
+
+            foreach ($availability as $period) {
+                $period_start = Carbon::parse($period['from']);
+                $period_end = Carbon::parse($period['to']);
+
+                // If no overlap with current reservation, keep it
+                if ($end->lt($period_start) || $start->gt($period_end)) {
+                    $new_availability[] = $period;
+                } else {
+                    // Split overlapping period
+                    if ($period_start->lt($start)) {
+                        $new_availability[] = [
+                            'from' => $period_start->toDateTimeString(),
+                            'to' => $start->subDay()->toDateTimeString(),
+                        ];
+                    }
+                    if ($period_end->gt($end)) {
+                        $new_availability[] = [
+                            'from' => $end->addDay()->toDateTimeString(),
+                            'to' => $period_end->toDateTimeString(),
+                        ];
+                    }
+                }
+            }
+
+            // Save updated availability after reservation
+            $apartment->availability = $new_availability;
+            $apartment->status = ApartmentStatus::RESERVED->value;
+            $apartment->save();
         }
 
         // إشعار صاحب الطلب

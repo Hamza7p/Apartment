@@ -43,7 +43,7 @@ class ApartmentFactory extends Factory
                 'ar' => 'عنوان تجريبي',
             ],
             'status' => ApartmentStatus::AVAILABLE->value,
-            'available_at' => now(),
+            'availability' => null,
             'number_of_room' => fake()->numberBetween(1, 5),
             'number_of_bathroom' => fake()->numberBetween(1, 3),
             'area' => fake()->numberBetween(50, 250),
@@ -57,7 +57,7 @@ class ApartmentFactory extends Factory
     {
         return $this->state([
             'status' => ApartmentStatus::AVAILABLE->value,
-            'available_at' => now(),
+            'availability' => now(),
         ]);
     }
 
@@ -65,7 +65,7 @@ class ApartmentFactory extends Factory
     {
         return $this->state([
             'status' => ApartmentStatus::RESERVED->value,
-            'available_at' => now()->addDays(10),
+            'availability' => now()->addDays(10),
         ]);
     }
 
@@ -73,7 +73,7 @@ class ApartmentFactory extends Factory
     {
         return $this->state([
             'status' => ApartmentStatus::UNDER_MAINTENANCE->value,
-            'available_at' => null,
+            'availability' => null,
         ]);
     }
 }
