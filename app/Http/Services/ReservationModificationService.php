@@ -2,7 +2,6 @@
 
 namespace App\Http\Services;
 
-use App\Enums\Apartment\ApartmentStatus;
 use App\Enums\Reservation\ReservationStatus;
 use App\Http\Services\Base\CrudService;
 use App\Models\Reservation;
@@ -19,10 +18,14 @@ class ReservationModificationService extends CrudService
 {
     private ReservationConflictService $reservationConflictService;
 
+    private ApartmentAvailabilityService $apartmentAvailabilityService;
+
     public function __construct(
-        ReservationConflictService $reservationConflictService)
-    {
+        ReservationConflictService $reservationConflictService,
+        ApartmentAvailabilityService $apartmentAvailabilityService
+    ) {
         $this->reservationConflictService = $reservationConflictService;
+        $this->apartmentAvailabilityService = $apartmentAvailabilityService;
     }
 
     protected function getModelClass(): string
@@ -116,57 +119,25 @@ class ReservationModificationService extends CrudService
 
         $modification->update(['status' => 'accepted']);
         if (in_array($modification->type, ['start_date', 'end_date'], true)) {
+            $start = Carbon::parse($reservation->start_date);
+            $end = Carbon::parse($reservation->end_date);
+
             $this->reservationConflictService->rejectConflictingRequests(
                 $reservation->apartment_id,
                 $reservation->start_date,
                 $reservation->end_date,
                 $reservation->id
             );
-            // --- Update availability JSON ---
-            $availability = $apartment->availability;
-            $start = Carbon::parse($reservation->start_date);
-            $end = Carbon::parse($reservation->end_date);
+            // ✅ Update availability via service
+            $newAvailability = $this->apartmentAvailabilityService->applyReservation(
+                $apartment,
+                $start,
+                $end
+            );
 
-            if (! is_array($availability) || empty($availability)) {
-                $availability = [
-                    [
-                        'from' => now()->toDateTimeString(),
-                        'to' => '2099-12-31 23:59:59',
-                    ],
-                ];
-            }
-
-            // Now $availability is always an array
-            $new_availability = [];
-
-            foreach ($availability as $period) {
-                $period_start = Carbon::parse($period['from']);
-                $period_end = Carbon::parse($period['to']);
-
-                // If no overlap with current reservation, keep it
-                if ($end->lt($period_start) || $start->gt($period_end)) {
-                    $new_availability[] = $period;
-                } else {
-                    // Split overlapping period
-                    if ($period_start->lt($start)) {
-                        $new_availability[] = [
-                            'from' => $period_start->toDateTimeString(),
-                            'to' => $start->subDay()->toDateTimeString(),
-                        ];
-                    }
-                    if ($period_end->gt($end)) {
-                        $new_availability[] = [
-                            'from' => $end->addDay()->toDateTimeString(),
-                            'to' => $period_end->toDateTimeString(),
-                        ];
-                    }
-                }
-            }
-
-            // Save updated availability after reservation
-            $apartment->availability = $new_availability;
-            $apartment->status = ApartmentStatus::RESERVED->value;
-            $apartment->save();
+            $apartment->update([
+                'availability' => $newAvailability,
+            ]);
         }
 
         // إشعار صاحب الطلب

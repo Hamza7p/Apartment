@@ -2,7 +2,6 @@
 
 namespace App\Http\Services;
 
-use App\Enums\Apartment\ApartmentStatus;
 use App\Enums\Reservation\ReservationStatus;
 use App\Http\Services\Base\CrudService;
 use App\Models\Apartment;
@@ -18,10 +17,14 @@ class ReservationService extends CrudService
 {
     private ReservationConflictService $reservationConflictService;
 
+    private ApartmentAvailabilityService $apartmentAvailabilityService;
+
     public function __construct(
-        ReservationConflictService $reservationConflictService)
-    {
+        ReservationConflictService $reservationConflictService,
+        ApartmentAvailabilityService $apartmentAvailabilityService
+    ) {
         $this->reservationConflictService = $reservationConflictService;
+        $this->apartmentAvailabilityService = $apartmentAvailabilityService;
     }
 
     protected function getModelClass(): string
@@ -31,13 +34,14 @@ class ReservationService extends CrudService
 
     public function accept($reservation_request_id)
     {
-        $reservation_request = ReservationRequest::find($reservation_request_id);
+        $reservation_request = ReservationRequest::findOrFail($reservation_request_id);
 
         return DB::transaction(function () use ($reservation_request) {
-            $apartment = Apartment::find($reservation_request->apartment_id);
+            $apartment = Apartment::findOrFail($reservation_request->apartment_id);
 
             $start = Carbon::parse($reservation_request->start_date);
             $end = Carbon::parse($reservation_request->end_date);
+
             $days = $start->diffInDays($end);
             $total_amount = $apartment->price * $days;
 
@@ -45,70 +49,40 @@ class ReservationService extends CrudService
                 throw new \Exception(__('errors.unauthorized'));
             }
 
-            // --- Update availability JSON ---
-            $availability = $apartment->availability;
+            // ✅ Update availability via service
+            $newAvailability = $this->apartmentAvailabilityService->applyReservation(
+                $apartment,
+                $start,
+                $end
+            );
 
-            if (! is_array($availability) || empty($availability)) {
-                $availability = [
-                    [
-                        'from' => now()->toDateTimeString(),
-                        'to' => '2099-12-31',
-                    ],
-                ];
-            }
+            $apartment->update([
+                'availability' => $newAvailability,
+            ]);
 
-            // Now $availability is always an array
-            $new_availability = [];
-
-            foreach ($availability as $period) {
-                $period_start = Carbon::parse($period['from']);
-                $period_end = Carbon::parse($period['to']);
-
-                // If no overlap with current reservation, keep it
-                if ($end->lt($period_start) || $start->gt($period_end)) {
-                    $new_availability[] = $period;
-                } else {
-                    // Split overlapping period
-                    if ($period_start->lt($start)) {
-                        $new_availability[] = [
-                            'from' => $period_start->toDateTimeString(),
-                            'to' => $start->subDay()->toDateTimeString(),
-                        ];
-                    }
-                    if ($period_end->gt($end)) {
-                        $new_availability[] = [
-                            'from' => $end->addDay()->toDateTimeString(),
-                            'to' => $period_end->toDateTimeString(),
-                        ];
-                    }
-                }
-            }
-
-            // Save updated availability after reservation
-            $apartment->availability = $new_availability;
-            $apartment->status = ApartmentStatus::RESERVED->value;
-            $apartment->save();
-
-            // --- Create reservation ---
             $reservation = $this->create([
                 'reservation_request_id' => $reservation_request->id,
                 'user_id' => $reservation_request->user_id,
-                'apartment_id' => $reservation_request->apartment_id,
-                'start_date' => $reservation_request->start_date,
-                'end_date' => $reservation_request->end_date,
+                'apartment_id' => $apartment->id,
+                'start_date' => $start,
+                'end_date' => $end,
                 'status' => ReservationStatus::ACTIVE->value,
                 'total_amount' => $total_amount,
             ]);
 
-            Notification::send($reservation_request->user, new ReservationAcceptedNotification($reservation));
+            Notification::send(
+                $reservation_request->user,
+                new ReservationAcceptedNotification($reservation)
+            );
 
-            ReservationRequest::where('id', $reservation_request->id)
-                ->update(['status' => ReservationStatus::ACCEPTED->value]);
+            $reservation_request->update([
+                'status' => ReservationStatus::ACCEPTED->value,
+            ]);
 
             $this->reservationConflictService->rejectConflictingRequests(
-                $reservation_request->apartment_id,
-                $reservation_request->start_date,
-                $reservation_request->end_date,
+                $apartment->id,
+                $start,
+                $end,
                 $reservation_request->id
             );
 

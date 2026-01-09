@@ -5,15 +5,22 @@ namespace App\Http\Controllers;
 use App\Filters\ApartmentFilter;
 use App\Http\Requests\ApartmenRequest;
 use App\Http\Resources\Apartment\ApartmentDetails;
+use App\Http\Services\ApartmentAvailabilityService;
 use App\Http\Services\ApartmentService;
 
 class ApartmentController extends Controller
 {
     private ApartmentService $apartmentService;
 
-    public function __construct(ApartmentService $apartmentService)
-    {
+    private ApartmentAvailabilityService $apartmentAvailabilityService;
+
+    public function __construct(
+        ApartmentService $apartmentService,
+        ApartmentAvailabilityService $apartmentAvailabilityService
+    ) {
         $this->apartmentService = $apartmentService;
+        $this->apartmentAvailabilityService = $apartmentAvailabilityService;
+
         $this->middleware(['setLocale', 'auth:sanctum', 'isApproved']);
     }
 
@@ -65,5 +72,12 @@ class ApartmentController extends Controller
         $this->apartmentService->delete($id);
 
         return response()->noContent();
+    }
+
+    public function getAvailableNow()
+    {
+        $apartments = $this->apartmentAvailabilityService->getAvailableNow();
+
+        return ApartmentDetails::collection($apartments);
     }
 }

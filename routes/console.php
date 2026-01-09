@@ -15,3 +15,8 @@ app()->afterResolving(Schedule::class, function (Schedule $schedule) {
 app()->afterResolving(Schedule::class, function (Schedule $schedule) {
     $schedule->command('reservations:end')->daily();
 });
+
+// ToDo:
+/**
+ * add schedule for apartment availability
+ */

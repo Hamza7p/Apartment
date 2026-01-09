@@ -23,7 +23,7 @@ return new class extends Migration
             $table->integer('governorate');
             $table->json('city');
             $table->json('address');
-            $table->string('status')->default(ApartmentStatus::AVAILABLE->value); // enum: available, reserved, under_maintenance
+            $table->string('status')->default(ApartmentStatus::AVAILABLE->value); // enum: available, unavailable
             $table->json('availability')->nullable();
             $table->unsignedInteger('number_of_room');
             $table->unsignedInteger('number_of_bathroom');

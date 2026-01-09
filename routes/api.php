@@ -38,6 +38,7 @@ Route::get('favorites', [FavoriteController::class, 'index']);
 Route::apiResource('apartment/review', ReviewController::class);
 
 Route::apiResource('apartment', ApartmentController::class);
+Route::get('apartments/available', [ApartmentController::class, 'getAvailableNow']);
 
 Route::apiResource('media', MediumController::class)->only(['show', 'store']);
 Route::post('media/store-many', [MediumController::class, 'storeMultiple']);
