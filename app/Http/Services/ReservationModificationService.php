@@ -112,7 +112,7 @@ class ReservationModificationService extends CrudService
             'start_date' => $reservation->start_date = $modification->new_value,
             'end_date' => $reservation->end_date = $modification->new_value,
             'total_amount' => $reservation->total_amount = $modification->new_value,
-            'cancel' => $reservation->status = ReservationStatus::CANCELED,
+            'cancel' => $reservation->status = ReservationStatus::CANCELLED,
         };
 
         $reservation->save();

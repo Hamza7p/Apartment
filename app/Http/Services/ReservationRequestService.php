@@ -38,7 +38,7 @@ class ReservationRequestService extends CrudService
             throw new Exception(__('errors.not_found'));
         }
 
-        $reservation_request->status = ReservationStatus::CANCELED->value;
+        $reservation_request->status = ReservationStatus::CANCELLED->value;
         $reservation_request->saveQuietly();
     }
 
