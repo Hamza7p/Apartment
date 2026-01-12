@@ -54,11 +54,13 @@ Route::post('notifications/read', [NotificationController::class, 'markAsRead'])
 Route::get('system-data', [SystemController::class, 'getData']);
 Route::apiResource('users', UserController::class);
 
+Route::get('reservation-requests/send', [ReservationRequestController::class, 'getSendReservationRequest']);
+Route::get('reservation-requests/receive', [ReservationRequestController::class, 'getReceiveReservationRequest']);
+Route::post('reservation-requests/{id}/accept', [ReservationController::class, 'accept']);
+Route::post('reservation-requests/{id}/reject', [ReservationController::class, 'reject']);
 Route::apiResource('reservation-requests', ReservationRequestController::class);
 
 Route::apiResource('reservations', ReservationController::class);
-Route::post('reservation-requests/{id}/accept', [ReservationController::class, 'accept']);
-Route::post('reservation-requests/{id}/reject', [ReservationController::class, 'reject']);
 
 Route::apiResource('reservation-modifications', ReservationModificationController::class);
 Route::post('reservations/{id}/modifications', [ReservationModificationController::class, 'requestModification']);

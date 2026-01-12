@@ -21,7 +21,8 @@ class ApartmentController extends Controller
         $this->apartmentService = $apartmentService;
         $this->apartmentAvailabilityService = $apartmentAvailabilityService;
 
-        $this->middleware(['setLocale', 'auth:sanctum', 'isApproved']);
+        $this->middleware(['setLocale', 'auth:sanctum']);
+        $this->middleware('isApproved')->except('index');
     }
 
     /**

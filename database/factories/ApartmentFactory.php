@@ -61,14 +61,6 @@ class ApartmentFactory extends Factory
         ]);
     }
 
-    public function reserved(): static
-    {
-        return $this->state([
-            'status' => ApartmentStatus::RESERVED->value,
-            'availability' => now()->addDays(10),
-        ]);
-    }
-
     public function underMaintenance(): static
     {
         return $this->state([

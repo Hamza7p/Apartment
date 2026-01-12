@@ -41,4 +41,21 @@ class ReservationRequestService extends CrudService
         $reservation_request->status = ReservationStatus::CANCELED->value;
         $reservation_request->saveQuietly();
     }
+
+    public function getSendReservationRequest()
+    {
+        $user = Auth::user();
+        $resevationRequests = $user->reservationRequests;
+
+        return $resevationRequests;
+    }
+
+    public function getReceiveReservationRequest()
+    {
+        $user = Auth::user();
+
+        $apartmentIds = $user->apartments()->pluck('id');
+
+        return ReservationRequest::whereIn('apartment_id', $apartmentIds)->get();
+    }
 }

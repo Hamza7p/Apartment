@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Ramsey\Collection\Collection;
 
 class User extends BaseModel implements Authenticatable
 {
@@ -96,5 +95,15 @@ class User extends BaseModel implements Authenticatable
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class);
+    }
+
+    public function reservationRequests()
+    {
+        return $this->hasMany(ReservationRequest::class);
+    }
+
+    public function apartments()
+    {
+        return $this->hasMany(Apartment::class);
     }
 }

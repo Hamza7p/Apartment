@@ -69,4 +69,6 @@ class Apartment extends BaseModel
     {
         return $this->hasMany(Reservation::class);
     }
+
+
 }
