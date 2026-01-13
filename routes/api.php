@@ -64,8 +64,10 @@ Route::get('reservations/my-reservations', [ReservationController::class, 'getMy
 Route::get('reservations/my-apartment-reservations', [ReservationController::class, 'getMyApartmentReservations']);
 Route::apiResource('reservations', ReservationController::class);
 
-Route::get('reservation-modifications/send', [ReservationModificationController::class, 'getSendReservationModifications']);
-Route::get('reservation-modifications/receive', [ReservationModificationController::class, 'getReceiveReservationModifications']);
+Route::get('reservation-modifications/owner-send', [ReservationModificationController::class, 'getOwnerSendReservationModifications']);
+Route::get('reservation-modifications/tenant-send', [ReservationModificationController::class, 'getTenantSendReservationModifications']);
+Route::get('reservation-modifications/owner-receive', [ReservationModificationController::class, 'getOwnerReceiveReservationModifications']);
+Route::get('reservation-modifications/tenant-receive', [ReservationModificationController::class, 'getTenantReceiveReservationModifications']);
 Route::apiResource('reservation-modifications', ReservationModificationController::class);
 Route::post('reservations/{id}/modifications', [ReservationModificationController::class, 'requestModification']);
 Route::post('modifications/{id}/accept', [ReservationModificationController::class, 'acceptModification']);

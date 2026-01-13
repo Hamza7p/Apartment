@@ -61,16 +61,31 @@ class ReservationModificationController extends Controller
 
     }
 
-    public function getSendReservationModifications()
+    public function getOwnerSendReservationModifications()
     {
-        $reservationModifications = $this->reservationModificationService->getSendReservationModifications();
+        $reservationModifications = $this->reservationModificationService->getOwnerSendReservationModifications();
 
         return ReservationModificationDetails::collection($reservationModifications);
     }
 
-    public function getReceiveReservationModifications()
+    public function getTenantSendReservationModifications()
     {
-        $reservationModifications = $this->reservationModificationService->getReceiveReservationModifications();
+        $reservationModifications = $this->reservationModificationService->getTenantSendReservationModifications();
+
+        return ReservationModificationDetails::collection($reservationModifications);
+    }
+
+    public function getOwnerReceiveReservationModifications()
+    {
+        $reservationModifications = $this->reservationModificationService->getOwnerReceiveReservationModifications();
+
+        return ReservationModificationDetails::collection($reservationModifications);
+
+    }
+
+    public function getTenantReceiveReservationModifications()
+    {
+        $reservationModifications = $this->reservationModificationService->getTenantReceiveReservationModifications();
 
         return ReservationModificationDetails::collection($reservationModifications);
 

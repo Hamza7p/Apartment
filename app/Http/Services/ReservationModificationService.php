@@ -185,32 +185,55 @@ class ReservationModificationService extends CrudService
         return $reservationModifications;
     }
 
-    public function getReceiveReservationModifications()
+    // Sent modifications by the current user as an owner
+    public function getOwnerSendReservationModifications()
     {
         $user = Auth::user();
 
-        $modifications = ReservationModification::query()
-            ->with([
-                'reservation.apartment',
-                'reservation.user',
-                'user', // صاحب الطلب
-            ])
-            ->where(function ($query) use ($user) {
-                $query
-                    // تعديلات السعر: المستلم هو صاحب الحجز
-                    ->whereHas('reservation', function ($q) use ($user) {
-                        $q->where('user_id', $user->id);
-                    })
-                    // باقي التعديلات: المستلم هو صاحب الشقة
-                    ->orWhereHas('reservation.apartment', function ($q) use ($user) {
-                        $q->where('user_id', $user->id);
-                    });
-            })
-            // لا تجلب الطلبات التي أنشأها المستخدم نفسه
+        return ReservationModification::query()
+            ->with(['reservation.apartment', 'reservation.user', 'user'])
+            ->where('user_id', $user->id) // <- CURRENT USER CREATED IT
+            ->whereHas('reservation.apartment', fn ($q) => $q->where('user_id', $user->id))
+            ->latest()
+            ->get();
+    }
+
+    // Sent modifications by the current user as a tenant
+    public function getTenantSendReservationModifications()
+    {
+        $user = Auth::user();
+
+        return ReservationModification::query()
+            ->with(['reservation.apartment', 'reservation.user', 'user'])
+            ->where('user_id', $user->id) // <- CURRENT USER CREATED IT
+            ->whereHas('reservation', fn ($q) => $q->where('user_id', $user->id))
+            ->latest()
+            ->get();
+    }
+
+    // Received modifications for the current user as an owner
+    public function getOwnerReceiveReservationModifications()
+    {
+        $user = Auth::user();
+
+        return ReservationModification::query()
+            ->with(['reservation.apartment', 'reservation.user', 'user'])
+            ->whereHas('reservation.apartment', fn ($q) => $q->where('user_id', $user->id))
             ->where('user_id', '!=', $user->id)
             ->latest()
             ->get();
+    }
 
-        return $modifications;
+    // Received modifications for the current user as a tenant
+    public function getTenantReceiveReservationModifications()
+    {
+        $user = Auth::user();
+
+        return ReservationModification::query()
+            ->with(['reservation.apartment', 'reservation.user', 'user'])
+            ->whereHas('reservation', fn ($q) => $q->where('user_id', $user->id))
+            ->where('user_id', '!=', $user->id)
+            ->latest()
+            ->get();
     }
 }
