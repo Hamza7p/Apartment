@@ -113,20 +113,24 @@ class ReservationModificationService extends CrudService
         }
 
         // Determine allowed actions
-        $isOwner = $user->id === $apartment->user_id;
-        $isTenant = $user->id === $reservation->user_id;
+        $user = Auth::user();
+        $reservation = $modification->reservation;
+        $apartment = $reservation->apartment;
 
+        // Determine who can accept
         switch ($modification->type) {
+            case 'date':
             case 'start_date':
             case 'end_date':
-            case 'date':
-                if (! $isOwner) {
+                // Only the owner can accept date changes
+                if ($user->id !== $apartment->user_id) {
                     throw new \Exception(__('errors.unauthorized'));
                 }
                 break;
 
             case 'cancel':
-                if (! $isTenant) {
+                // Only the owner can accept cancel requests from tenant
+                if ($user->id !== $apartment->user_id) {
                     throw new \Exception(__('errors.unauthorized'));
                 }
                 break;
