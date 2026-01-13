@@ -59,4 +59,18 @@ class ReservationController extends Controller
             'data' => new ReservationRequestDetails($reservation_request),
         ]);
     }
+
+    public function getMyReservatoins()
+    {
+        $resevations = $this->reservationService->getMyReservatoins();
+
+        return ReservationDetails::collection($resevations);
+    }
+
+    public function getMyApartmentReservations()
+    {
+        $reservations = $this->reservationService->getMyApartmentReservations();
+
+        return ReservationDetails::collection($reservations);
+    }
 }

@@ -43,6 +43,7 @@ class ReservationModificationService extends CrudService
 
         // حفظ الطلب في جدول التعديلات
         $modification = ReservationModification::create([
+            'user_id' => $user->id,
             'reservation_id' => $reservation->id,
             'type' => $data['type'],
             'old_value' => match ($data['type']) {
@@ -52,7 +53,6 @@ class ReservationModificationService extends CrudService
                 default => null,
             },
             'new_value' => $data['new_value'] ?? null,
-            'requested_by' => $user->id,
             'status' => 'pending',
         ]);
 
@@ -87,7 +87,7 @@ class ReservationModificationService extends CrudService
         }
 
         // لا يمكن قبول طلبك أنت
-        if ($user->id === $modification->requested_by) {
+        if ($user->id === $modification->user_id) {
             throw new Exception(__('errors.unauthorized'));
         }
 
@@ -174,5 +174,43 @@ class ReservationModificationService extends CrudService
         Notification::send($receiver, new ReservationModificationRequestNotification($modification));
 
         return $modification;
+    }
+
+    public function getSendReservationModifications()
+    {
+        $user = Auth::user();
+
+        $reservationModifications = $user->reservationModifications;
+
+        return $reservationModifications;
+    }
+
+    public function getReceiveReservationModifications()
+    {
+        $user = Auth::user();
+
+        $modifications = ReservationModification::query()
+            ->with([
+                'reservation.apartment',
+                'reservation.user',
+                'user', // صاحب الطلب
+            ])
+            ->where(function ($query) use ($user) {
+                $query
+                    // تعديلات السعر: المستلم هو صاحب الحجز
+                    ->whereHas('reservation', function ($q) use ($user) {
+                        $q->where('user_id', $user->id);
+                    })
+                    // باقي التعديلات: المستلم هو صاحب الشقة
+                    ->orWhereHas('reservation.apartment', function ($q) use ($user) {
+                        $q->where('user_id', $user->id);
+                    });
+            })
+            // لا تجلب الطلبات التي أنشأها المستخدم نفسه
+            ->where('user_id', '!=', $user->id)
+            ->latest()
+            ->get();
+
+        return $modifications;
     }
 }

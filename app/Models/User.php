@@ -102,6 +102,16 @@ class User extends BaseModel implements Authenticatable
         return $this->hasMany(ReservationRequest::class);
     }
 
+    public function reservationModifications()
+    {
+        return $this->hasMany(ReservationModification::class);
+    }
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
+    }
+
     public function apartments()
     {
         return $this->hasMany(Apartment::class);

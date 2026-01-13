@@ -89,7 +89,7 @@ class AuthService  // extends CrudService
         $otp->update(['verified' => true]);
 
         $user = $otp->user;
-        if($user){
+        if ($user) {
             $this->verifyUser($user);
         }
 
@@ -108,6 +108,7 @@ class AuthService  // extends CrudService
             'otp' => generateOtpCode(),
             'expires_at' => now()->addMinutes(5),
         ];
+
         return MobileOtp::updateOrCreate(['phone' => $phone], $data);
     }
 }

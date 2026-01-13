@@ -60,8 +60,12 @@ Route::post('reservation-requests/{id}/accept', [ReservationController::class, '
 Route::post('reservation-requests/{id}/reject', [ReservationController::class, 'reject']);
 Route::apiResource('reservation-requests', ReservationRequestController::class);
 
+Route::get('reservations/my-reservations', [ReservationController::class, 'getMyReservatoins']);
+Route::get('reservations/my-apartment-reservations', [ReservationController::class, 'getMyApartmentReservations']);
 Route::apiResource('reservations', ReservationController::class);
 
+Route::get('reservation-modifications/send', [ReservationModificationController::class, 'getSendReservationModifications']);
+Route::get('reservation-modifications/receive', [ReservationModificationController::class, 'getReceiveReservationModifications']);
 Route::apiResource('reservation-modifications', ReservationModificationController::class);
 Route::post('reservations/{id}/modifications', [ReservationModificationController::class, 'requestModification']);
 Route::post('modifications/{id}/accept', [ReservationModificationController::class, 'acceptModification']);

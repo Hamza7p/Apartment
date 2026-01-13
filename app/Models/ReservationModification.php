@@ -10,11 +10,11 @@ class ReservationModification extends BaseModel
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'reservation_id',
         'type',
         'old_value',
         'new_value',
-        'requested_by',
         'status',
     ];
 
@@ -25,6 +25,6 @@ class ReservationModification extends BaseModel
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'requested_by');
+        return $this->belongsTo(User::class);
     }
 }

@@ -24,6 +24,7 @@ class ReservationRequestDetails extends BaseJsonResource
             'apartment' => new ApartmentLight($this->whenLoaded('apartment')),
             'start_date' => $this->start_date->format('Y-m-d'),
             'end_date' => $this->end_date->format('Y-m-d'),
+            'total_amount' => $this->total_amount,
             'status' => $this->status,
             'note' => $this->note,
         ];

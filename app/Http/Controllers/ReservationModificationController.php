@@ -60,4 +60,19 @@ class ReservationModificationController extends Controller
         return new ReservationModificationDetails($modification);
 
     }
+
+    public function getSendReservationModifications()
+    {
+        $reservationModifications = $this->reservationModificationService->getSendReservationModifications();
+
+        return ReservationModificationDetails::collection($reservationModifications);
+    }
+
+    public function getReceiveReservationModifications()
+    {
+        $reservationModifications = $this->reservationModificationService->getReceiveReservationModifications();
+
+        return ReservationModificationDetails::collection($reservationModifications);
+
+    }
 }

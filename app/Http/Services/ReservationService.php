@@ -10,6 +10,7 @@ use App\Models\ReservationRequest;
 use App\Notifications\Reservation\ReservationAcceptedNotification;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 
@@ -107,5 +108,23 @@ class ReservationService extends CrudService
         Notification::send($reservation_request->user, $reservation_request);
 
         return $reservation_request;
+    }
+
+    public function getMyReservatoins()
+    {
+        $user = Auth::user();
+
+        $reservations = $user->reservations;
+
+        return $reservations;
+    }
+
+    public function getMyApartmentReservations()
+    {
+        $user = Auth::user();
+        $apartmentIds = $user->apartments()->pluck('id');
+
+        return Reservation::whereIn('apartment_id', $apartmentIds)->get();
+
     }
 }

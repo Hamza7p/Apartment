@@ -4,9 +4,11 @@ namespace App\Http\Services;
 
 use App\Enums\Reservation\ReservationStatus;
 use App\Http\Services\Base\CrudService;
+use App\Models\Apartment;
 use App\Models\Base\BaseModel;
 use App\Models\ReservationRequest;
 use App\Notifications\Reservation\ReservationRequestNotification as ReservationReservationRequestNotification;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
@@ -20,7 +22,15 @@ class ReservationRequestService extends CrudService
 
     public function create(array $data): BaseModel
     {
+        $apartment = Apartment::findOrFail($data['apartment_id']);
+        $start = Carbon::parse($data['start_date']);
+        $end = Carbon::parse($data['end_date']);
+        $days = $start->diffInDays($end);
+        $total_amount = $apartment->price * $days;
+
         $data['user_id'] = Auth::user()->id;
+        $data['total_amount'] = $total_amount;
+
         $reservation_request = parent::create($data);
         $user = $reservation_request->user;
         $apartment = $reservation_request->apartment;
