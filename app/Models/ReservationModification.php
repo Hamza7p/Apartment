@@ -18,6 +18,10 @@ class ReservationModification extends BaseModel
         'status',
     ];
 
+    protected $casts = [
+        'new_value' => 'array',
+    ];
+
     public function reservation()
     {
         return $this->belongsTo(Reservation::class);

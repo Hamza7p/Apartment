@@ -42,7 +42,7 @@ class ReservationModificationController extends Controller
     {
         $modification = $this->reservationModificationService->requestModification($id, $request->validated());
 
-        return new ReservationModificationDetails($modification);
+        return ReservationModificationDetails::collection($modification);
     }
 
     public function acceptModification(int $modificationId)

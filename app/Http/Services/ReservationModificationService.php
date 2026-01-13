@@ -9,9 +9,7 @@ use App\Models\ReservationModification;
 use App\Notifications\Reservation\ReservationModificationAcceptedNotification;
 use App\Notifications\Reservation\ReservationModificationRequestNotification;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
 
 class ReservationModificationService extends CrudService
@@ -40,36 +38,59 @@ class ReservationModificationService extends CrudService
     {
         $reservation = Reservation::with('apartment', 'user')->findOrFail($reservationId);
         $user = Auth::user();
+        $modifications = collect();
 
-        // حفظ الطلب في جدول التعديلات
-        $modification = ReservationModification::create([
-            'user_id' => $user->id,
-            'reservation_id' => $reservation->id,
-            'type' => $data['type'],
-            'old_value' => match ($data['type']) {
-                'start_date' => $reservation->start_date,
-                'end_date' => $reservation->end_date,
-                'total_amount' => $reservation->total_amount,
-                default => null,
-            },
-            'new_value' => $data['new_value'] ?? null,
-            'status' => 'pending',
-        ]);
+        // Only date or cancel modifications are allowed
+        if (($data['type'] ?? null) === 'date') {
+            // Start date
+            $start = $data['start_date'] ?? $reservation->start_date;
+            if ($start != $reservation->start_date) {
+                $modifications->push(ReservationModification::create([
+                    'user_id' => $user->id,
+                    'reservation_id' => $reservation->id,
+                    'type' => 'start_date',
+                    'old_value' => $reservation->start_date,
+                    'new_value' => $start,
+                    'status' => 'pending',
+                ]));
+            }
 
-        $modification->load([
-            'reservation',
-            'user',
-        ]);
+            // End date
+            $end = $data['end_date'] ?? $reservation->end_date;
+            if ($end != $reservation->end_date) {
+                $modifications->push(ReservationModification::create([
+                    'user_id' => $user->id,
+                    'reservation_id' => $reservation->id,
+                    'type' => 'end_date',
+                    'old_value' => $reservation->end_date,
+                    'new_value' => $end,
+                    'status' => 'pending',
+                ]));
+            }
+        } elseif (($data['type'] ?? null) === 'cancel') {
+            $modifications->push(ReservationModification::create([
+                'user_id' => $user->id,
+                'reservation_id' => $reservation->id,
+                'type' => 'cancel',
+                'old_value' => null,
+                'new_value' => null,
+                'status' => 'pending',
+            ]));
+        } else {
+            throw new \Exception(__('errors.invalid_modification_type'));
+        }
 
-        // تحديد الطرف المستقبل للإشعار
-        $receiver = match ($data['type']) {
-            'total_price' => $reservation->user,
-            default => $reservation->apartment->owner,
-        };
+        // Notify the other party
+        foreach ($modifications as $modification) {
+            $modification->load(['reservation', 'user']);
+            $receiver = $reservation->apartment->user_id === $user->id
+                ? $reservation->user  // Owner sent modification → notify tenant
+                : $reservation->apartment->owner; // Tenant sent modification → notify owner
 
-        Notification::send($receiver, new ReservationModificationRequestNotification($modification));
+            Notification::send($receiver, new ReservationModificationRequestNotification($modification));
+        }
 
-        return $modification;
+        return $modifications;
     }
 
     /**
@@ -83,42 +104,62 @@ class ReservationModificationService extends CrudService
         $user = Auth::user();
 
         if ($modification->status !== 'pending') {
-            throw new Exception(__('errors.no_pending_modification'));
+            throw new \Exception(__('errors.no_pending_modification'));
         }
 
-        // لا يمكن قبول طلبك أنت
+        // Authorization: the one who did NOT request the modification must accept
         if ($user->id === $modification->user_id) {
-            throw new Exception(__('errors.unauthorized'));
+            throw new \Exception(__('errors.unauthorized'));
         }
 
-        // صلاحيات الطرف الآخر
+        // Determine allowed actions
+        $isOwner = $user->id === $apartment->user_id;
+        $isTenant = $user->id === $reservation->user_id;
+
         switch ($modification->type) {
             case 'start_date':
             case 'end_date':
-                Gate::authorize('respondToDateModification', $reservation);
-                break;
-
-            case 'total_amount':
-                Gate::authorize('respondToPriceModification', $reservation);
+            case 'date':
+                if (! $isOwner) {
+                    throw new \Exception(__('errors.unauthorized'));
+                }
                 break;
 
             case 'cancel':
-                Gate::authorize('respondToCancel', $reservation);
+                if (! $isTenant) {
+                    throw new \Exception(__('errors.unauthorized'));
+                }
+                break;
+
+            default:
+                throw new \Exception(__('errors.invalid_modification_type'));
+        }
+
+        // Apply modification
+        switch ($modification->type) {
+            case 'date':
+                $reservation->start_date = $modification->new_value['start_date'];
+                $reservation->end_date = $modification->new_value['end_date'];
+                break;
+
+            case 'start_date':
+                $reservation->start_date = $modification->new_value;
+                break;
+
+            case 'end_date':
+                $reservation->end_date = $modification->new_value;
+                break;
+
+            case 'cancel':
+                $reservation->status = ReservationStatus::CANCELLED;
                 break;
         }
 
-        // تطبيق التعديل
-        match ($modification->type) {
-            'start_date' => $reservation->start_date = $modification->new_value,
-            'end_date' => $reservation->end_date = $modification->new_value,
-            'total_amount' => $reservation->total_amount = $modification->new_value,
-            'cancel' => $reservation->status = ReservationStatus::CANCELLED,
-        };
-
         $reservation->save();
-
         $modification->update(['status' => 'accepted']);
-        if (in_array($modification->type, ['start_date', 'end_date'], true)) {
+
+        // Update apartment availability if dates changed
+        if (in_array($modification->type, ['date', 'start_date', 'end_date'], true)) {
             $start = Carbon::parse($reservation->start_date);
             $end = Carbon::parse($reservation->end_date);
 
@@ -128,20 +169,18 @@ class ReservationModificationService extends CrudService
                 $reservation->end_date,
                 $reservation->id
             );
-            // ✅ Update availability via service
+
             $newAvailability = $this->apartmentAvailabilityService->applyReservation(
                 $apartment,
                 $start,
                 $end
             );
 
-            $apartment->update([
-                'availability' => $newAvailability,
-            ]);
+            $apartment->update(['availability' => $newAvailability]);
         }
 
-        // إشعار صاحب الطلب
-        Notification::send($reservation->user, new ReservationModificationAcceptedNotification($modification));
+        // Notify the original requester
+        Notification::send($modification->user, new ReservationModificationAcceptedNotification($modification));
 
         return $modification;
     }
@@ -151,27 +190,49 @@ class ReservationModificationService extends CrudService
      */
     public function rejectModification(int $modificationId)
     {
-        $modification = ReservationModification::with('reservation')->findOrFail($modificationId);
+        $modification = ReservationModification::with('reservation.apartment')->findOrFail($modificationId);
         $reservation = $modification->reservation;
+        $apartment = $reservation->apartment;
         $user = Auth::user();
 
         if ($modification->status !== 'pending') {
-            throw new Exception(__('errors.unauthorized'));
+            throw new \Exception(__('errors.no_pending_modification'));
         }
 
-        // صلاحيات مثل Accept
-        if ($modification->type === 'total_price') {
-            Gate::authorize('modifyPrice', $reservation);
-        } else {
-            Gate::authorize('modifyDates', $reservation);
+        // The requester cannot reject their own modification
+        if ($user->id === $modification->user_id) {
+            throw new \Exception(__('errors.unauthorized'));
         }
 
-        $modification->status = 'rejected';
-        $modification->save();
+        // Authorization: who can reject
+        $isOwner = $user->id === $apartment->user_id;
+        $isTenant = $user->id === $reservation->user_id;
 
+        switch ($modification->type) {
+            case 'start_date':
+            case 'end_date':
+            case 'date':
+                if (! $isOwner) {
+                    throw new \Exception(__('errors.unauthorized'));
+                }
+                break;
+
+            case 'cancel':
+                if (! $isTenant) {
+                    throw new \Exception(__('errors.unauthorized'));
+                }
+                break;
+
+            default:
+                throw new \Exception(__('errors.invalid_modification_type'));
+        }
+
+        // Mark as rejected
+        $modification->update(['status' => 'rejected']);
+
+        // Notify the original requester
         $receiver = $modification->user;
-
-        Notification::send($receiver, new ReservationModificationRequestNotification($modification));
+        Notification::send($receiver, new ReservationModificationRejectedNotification($modification));
 
         return $modification;
     }
