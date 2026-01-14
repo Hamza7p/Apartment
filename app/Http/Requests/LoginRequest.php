@@ -24,7 +24,7 @@ class LoginRequest extends FormRequest
     {
         return [
             'phone' => ['required', 'string', 'regex:/^9639\d{8}$/', 'exists:users,phone'],
-            'password' => ['required', 'string', 'min:4'],
+            'password' => ['required', 'string', 'min:4', 'max:100'],
         ];
     }
 }
