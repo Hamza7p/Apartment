@@ -2,20 +2,24 @@
 
 namespace App\Models;
 
+use App\Models\Base\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class ReservationModification extends Model
+class ReservationModification extends BaseModel
 {
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'reservation_id',
         'type',
         'old_value',
         'new_value',
-        'requested_by',
         'status',
+    ];
+
+    protected $casts = [
+        'new_value' => 'array',
     ];
 
     public function reservation()
@@ -25,6 +29,6 @@ class ReservationModification extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'requested_by');
+        return $this->belongsTo(User::class);
     }
 }

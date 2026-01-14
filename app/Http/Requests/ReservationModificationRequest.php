@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Http\Services\ReservationConflictService;
 use App\Models\Reservation;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,19 +18,18 @@ class ReservationModificationRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'type' => ['required', 'in:start_date,end_date,total_amount,cancel'],
+            'type' => ['required', 'in:date,cancel'], // Removed total_amount
         ];
 
         switch ($this->input('type')) {
-            case 'start_date':
-            case 'end_date':
-                $rules['new_value'] = ['required', 'date'];
+            case 'date':
+                // Optional because we will default to existing reservation values
+                $rules['start_date'] = ['nullable', 'date'];
+                $rules['end_date'] = ['nullable', 'date'];
                 break;
-            case 'total_amount':
-                $rules['new_value'] = ['required', 'numeric', 'min:1'];
-                break;
+
             case 'cancel':
-                $rules['new_value'] = ['nullable'];
+                $rules['new_value'] = ['nullable']; // placeholder if needed
                 break;
         }
 
@@ -40,35 +40,49 @@ class ReservationModificationRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             $reservationId = $this->route('id');
-            $reservation = Reservation::findOrFail($reservationId);
-
+            $reservation = Reservation::with('apartment')->findOrFail($reservationId);
             $user = $this->user();
-            if (in_array($this->type, ['start_date', 'end_date']) && $user->id !== $reservation->user_id) {
-                $validator->errors()->add('type', __('errors.unauthorized'));
 
-                return;
-            }
+            // Authorization
+            switch ($this->type) {
+                case 'date':
+                    // Only tenant can request date modification
+                    if ($user->id !== $reservation->user_id) {
+                        $validator->errors()->add('type', __('errors.unauthorized'));
 
-            if ($this->type === 'total_amount' && $user->id !== $reservation->apartment->user_id) {
-                $validator->errors()->add('type', __('errors.unauthorized'));
+                        return;
+                    }
 
-                return;
-            }
-            if (in_array($this->type, ['start_date', 'end_date'])) {
-                $newStart = $this->type === 'start_date' ? $this->new_value : $reservation->start_date;
-                $newEnd = $this->type === 'end_date' ? $this->new_value : $reservation->end_date;
+                    // Use existing reservation dates if user did not send them
 
-                $conflictService = app(ReservationConflictService::class);
-                $hasConflict = $conflictService->hasConflict(
-                    $reservation->apartment_id,
-                    $newStart,
-                    $newEnd,
-                    $reservation->id
-                );
+                    $newStart = Carbon::parse($this->input('start_date') ?? $reservation->start_date);
+                    $newEnd = Carbon::parse($this->input('end_date') ?? $reservation->end_date);
 
-                if ($hasConflict) {
-                    $validator->errors()->add('new_value', __('errors.apartment_not_available'));
-                }
+                    if ($newEnd->lt($newStart)) {
+                        $validator->errors()->add('end_date', __('errors.end_date_before_start_date'));
+                    }
+
+                    // Check for conflicts
+                    $conflictService = app(ReservationConflictService::class);
+                    $hasConflict = $conflictService->hasConflict(
+                        $reservation->apartment_id,
+                        $newStart,
+                        $newEnd,
+                        $reservation->id
+                    );
+
+                    if ($hasConflict) {
+                        $validator->errors()->add('start_date', __('errors.apartment_not_available'));
+                        $validator->errors()->add('end_date', __('errors.apartment_not_available'));
+                    }
+                    break;
+
+                case 'cancel':
+                    // Only tenant can request cancel
+                    if ($user->id !== $reservation->user_id) {
+                        $validator->errors()->add('type', __('errors.unauthorized'));
+                    }
+                    break;
             }
         });
     }

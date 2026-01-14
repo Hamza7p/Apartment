@@ -71,4 +71,18 @@ class ReservationRequestController extends Controller
 
         return response()->noContent();
     }
+
+    public function getSendReservationRequest()
+    {
+        $resevationRequests = $this->reservationRequestService->getSendReservationRequest();
+
+        return ReservationRequestDetails::collection($resevationRequests);
+    }
+
+    public function getReceiveReservationRequest()
+    {
+        $reservationRequests = $this->reservationRequestService->getReceiveReservationRequest();
+
+        return ReservationRequestDetails::collection($reservationRequests);
+    }
 }

@@ -15,6 +15,7 @@ class ReservationRequest extends BaseModel
         'apartment_id',
         'start_date',
         'end_date',
+        'total_amount',
         'status',
         'note',
     ];

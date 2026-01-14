@@ -20,4 +20,5 @@ enum NotificationType: int
     case reservation_modification_requested = 10;
     case reservation_modification_accepted = 11;
     case reservation_modification_rejected = 12;
+    case otp = 13;
 }

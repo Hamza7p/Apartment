@@ -8,6 +8,7 @@ use App\Models\Review;
 use App\Models\User;
 use App\Notifications\Channels\DatabaseChannel;
 use App\Notifications\Channels\FcmChannel;
+use App\Notifications\Channels\SmsChannel;
 use App\Observers\ReviewObserver;
 use App\Observers\UserObserver;
 use Illuminate\Notifications\ChannelManager;
@@ -33,6 +34,6 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->make(ChannelManager::class)->extend('fcm', fn ($app) => new FcmChannel);
         $this->app->make(ChannelManager::class)->extend('database', fn ($app) => new DatabaseChannel);
-
+        $this->app->make(ChannelManager::class)->extend('sms', fn ($app) => new SmsChannel);
     }
 }

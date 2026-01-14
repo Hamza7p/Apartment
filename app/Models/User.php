@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Ramsey\Collection\Collection;
 
 class User extends BaseModel implements Authenticatable
 {
@@ -37,7 +36,8 @@ class User extends BaseModel implements Authenticatable
         'username',
         'role',
         'status',
-        // 'verified_at',
+        'fcm_token',
+        'verified_at',
     ];
 
     /**
@@ -95,5 +95,25 @@ class User extends BaseModel implements Authenticatable
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class);
+    }
+
+    public function reservationRequests()
+    {
+        return $this->hasMany(ReservationRequest::class);
+    }
+
+    public function reservationModifications()
+    {
+        return $this->hasMany(ReservationModification::class);
+    }
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
+    }
+
+    public function apartments()
+    {
+        return $this->hasMany(Apartment::class);
     }
 }

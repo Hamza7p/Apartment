@@ -2,11 +2,14 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Role\RoleName;
 use App\Models\Apartment;
 use App\Models\ReservationRequest;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,11 +20,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $now = Carbon::now();
         $owner = User::factory()->create([
             'phone' => '963944068317',
-            'password' => '123456789',
+            'username' => 'admin',
+            'password' => Hash::make('123456789'),
             'first_name' => 'Hamza',
-            'role' => 'admin',
+            'last_name' => 'At',
+            'date_of_birth' => '1995-05-15',
+            'role' => RoleName::admin->value,
+            'status' => '1',
+            'id_photo' => null,
+            'personal_photo' => null,
+            'verified_at' => $now,
+            'updated_at' => $now,
+            'created_at' => $now,
         ]);
 
         $user = User::factory()->create([
@@ -29,6 +42,13 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'faisal',
             'password' => '123456789',
 
+            'role' => 'user',
+        ]);
+
+        $user = User::factory()->create([
+            'phone' => '963991188227',
+            'password' => '123456789',
+            'first_name' => 'mouhamad shaaban',
             'role' => 'user',
         ]);
 

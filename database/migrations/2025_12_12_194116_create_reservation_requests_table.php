@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('apartment_id')->constrained()->cascadeOnDelete();
             $table->date('start_date');
             $table->date('end_date');
+            $table->decimal('total_amount', 10, 2);
             $table->string('status')->default(ReservationStatus::PENDING->value); // enum('pending','accepted','rejected')
             $table->text('note')->nullable();
             $table->timestamps();

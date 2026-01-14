@@ -22,6 +22,8 @@ Route::prefix('auth')->group(function () {
     Route::get('me', [AuthController::class, 'me']);
     Route::post('update-profile', [UserController::class, 'updateProfile']);
     Route::post('reset-password', [AuthController::class, 'resetPassword']);
+    Route::post('send-otp', [AuthController::class, 'sendOtp']);
+    Route::post('verify-otp', [AuthController::class, 'verifyOtp']);
 });
 
 Route::post('apartment/{apartmentId}/photo', [ApartmentPhotoController::class, 'store']);
@@ -36,6 +38,7 @@ Route::get('favorites', [FavoriteController::class, 'index']);
 Route::apiResource('apartment/review', ReviewController::class);
 
 Route::apiResource('apartment', ApartmentController::class);
+Route::get('apartments/available', [ApartmentController::class, 'getAvailableNow']);
 
 Route::apiResource('media', MediumController::class)->only(['show', 'store']);
 Route::post('media/store-many', [MediumController::class, 'storeMultiple']);
@@ -51,12 +54,20 @@ Route::post('notifications/read', [NotificationController::class, 'markAsRead'])
 Route::get('system-data', [SystemController::class, 'getData']);
 Route::apiResource('users', UserController::class);
 
-Route::apiResource('reservation-requests', ReservationRequestController::class);
-
-Route::apiResource('reservations', ReservationController::class);
+Route::get('reservation-requests/send', [ReservationRequestController::class, 'getSendReservationRequest']);
+Route::get('reservation-requests/receive', [ReservationRequestController::class, 'getReceiveReservationRequest']);
 Route::post('reservation-requests/{id}/accept', [ReservationController::class, 'accept']);
 Route::post('reservation-requests/{id}/reject', [ReservationController::class, 'reject']);
+Route::apiResource('reservation-requests', ReservationRequestController::class);
 
+Route::get('reservations/my-reservations', [ReservationController::class, 'getMyReservatoins']);
+Route::get('reservations/my-apartment-reservations', [ReservationController::class, 'getMyApartmentReservations']);
+Route::apiResource('reservations', ReservationController::class);
+
+Route::get('reservation-modifications/owner-send', [ReservationModificationController::class, 'getOwnerSendReservationModifications']);
+Route::get('reservation-modifications/tenant-send', [ReservationModificationController::class, 'getTenantSendReservationModifications']);
+Route::get('reservation-modifications/owner-receive', [ReservationModificationController::class, 'getOwnerReceiveReservationModifications']);
+Route::get('reservation-modifications/tenant-receive', [ReservationModificationController::class, 'getTenantReceiveReservationModifications']);
 Route::apiResource('reservation-modifications', ReservationModificationController::class);
 Route::post('reservations/{id}/modifications', [ReservationModificationController::class, 'requestModification']);
 Route::post('modifications/{id}/accept', [ReservationModificationController::class, 'acceptModification']);

@@ -3,10 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 
-class ResetPasswordRequest extends FormRequest
+class VerifyOtpRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,8 +26,8 @@ class ResetPasswordRequest extends FormRequest
                 return [];
             case 'POST':
                 return [
-                    'phone' => ['required', 'string', 'regex:/^9639\d{8}$/', 'exists:users,phone'],
-                    'password' => ['required', 'string', 'min:4', 'confirmed'],
+                    'phone' => ['required', 'regex:/^9639\d{8}$/', 'exists:users,phone'],
+                    'otp' => ['required', 'string', 'max:5'],
                 ];
         }
     }

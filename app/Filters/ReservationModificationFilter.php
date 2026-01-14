@@ -10,11 +10,11 @@ class ReservationModificationFilter extends BaseFilter
     public function attributesMap(): array
     {
         return [
+            'user_id',
             'reservation_id',
             'type',
             'old_value',
             'new_value',
-            'requested_by',
             'status',
 
         ];

@@ -28,7 +28,7 @@ class ApartmentDetails extends BaseJsonResource
             'city' => $this->translate($this->city),
             'address' => $this->translate($this->address),
             'status' => $this->status,
-            'available_at' => $this->available_at,
+            'available_at' => $this->availability,
             'number_of_room' => $this->number_of_room,
             'number_of_bathroom' => $this->number_of_bathroom,
             'area' => $this->area,

@@ -42,7 +42,7 @@ class ReservationModificationController extends Controller
     {
         $modification = $this->reservationModificationService->requestModification($id, $request->validated());
 
-        return new ReservationModificationDetails($modification);
+        return ReservationModificationDetails::collection($modification);
     }
 
     public function acceptModification(int $modificationId)
@@ -58,6 +58,36 @@ class ReservationModificationController extends Controller
         $modification = $this->reservationModificationService->rejectModification($modificationId);
 
         return new ReservationModificationDetails($modification);
+
+    }
+
+    public function getOwnerSendReservationModifications()
+    {
+        $reservationModifications = $this->reservationModificationService->getOwnerSendReservationModifications();
+
+        return ReservationModificationDetails::collection($reservationModifications);
+    }
+
+    public function getTenantSendReservationModifications()
+    {
+        $reservationModifications = $this->reservationModificationService->getTenantSendReservationModifications();
+
+        return ReservationModificationDetails::collection($reservationModifications);
+    }
+
+    public function getOwnerReceiveReservationModifications()
+    {
+        $reservationModifications = $this->reservationModificationService->getOwnerReceiveReservationModifications();
+
+        return ReservationModificationDetails::collection($reservationModifications);
+
+    }
+
+    public function getTenantReceiveReservationModifications()
+    {
+        $reservationModifications = $this->reservationModificationService->getTenantReceiveReservationModifications();
+
+        return ReservationModificationDetails::collection($reservationModifications);
 
     }
 }

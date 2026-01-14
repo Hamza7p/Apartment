@@ -24,7 +24,8 @@ class SendOtpRequest extends FormRequest
         return [
             'phone' => [
                 'required',
-                'regex:/^9639\d{8}$/'
+                'regex:/^9639\d{8}$/',
+                'exists:users,phone',
             ],
         ];
     }

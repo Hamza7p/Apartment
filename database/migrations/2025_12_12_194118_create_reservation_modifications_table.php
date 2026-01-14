@@ -11,11 +11,11 @@ return new class extends Migration
     {
         Schema::create('reservation_modifications', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('reservation_id')->constrained()->onDelete('cascade');
             $table->enum('type', ['end_date', 'start_date', 'total_amount', 'cancel'])->index();
             $table->text('old_value')->nullable();
             $table->text('new_value')->nullable();
-            $table->foreignId('requested_by')->constrained('users')->onDelete('cascade');
             $table->string('status')->default(ReservationStatus::PENDING->value);
             $table->timestamps();
         });

@@ -2,7 +2,6 @@
 
 namespace App\Http\Services;
 
-use App\Enums\Apartment\ApartmentStatus;
 use App\Enums\Reservation\ReservationStatus;
 use App\Http\Services\Base\CrudService;
 use App\Models\Apartment;
@@ -11,6 +10,7 @@ use App\Models\ReservationRequest;
 use App\Notifications\Reservation\ReservationAcceptedNotification;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 
@@ -18,10 +18,14 @@ class ReservationService extends CrudService
 {
     private ReservationConflictService $reservationConflictService;
 
+    private ApartmentAvailabilityService $apartmentAvailabilityService;
+
     public function __construct(
-        ReservationConflictService $reservationConflictService)
-    {
+        ReservationConflictService $reservationConflictService,
+        ApartmentAvailabilityService $apartmentAvailabilityService
+    ) {
         $this->reservationConflictService = $reservationConflictService;
+        $this->apartmentAvailabilityService = $apartmentAvailabilityService;
     }
 
     protected function getModelClass(): string
@@ -31,45 +35,55 @@ class ReservationService extends CrudService
 
     public function accept($reservation_request_id)
     {
-        $reservation_request = ReservationRequest::find($reservation_request_id);
+        $reservation_request = ReservationRequest::findOrFail($reservation_request_id);
 
         return DB::transaction(function () use ($reservation_request) {
-            $apartment = Apartment::find($reservation_request->apartment_id);
+            $apartment = Apartment::findOrFail($reservation_request->apartment_id);
+
             $start = Carbon::parse($reservation_request->start_date);
             $end = Carbon::parse($reservation_request->end_date);
+
             $days = $start->diffInDays($end);
             $total_amount = $apartment->price * $days;
 
-            if ($apartment->status->value === ApartmentStatus::AVAILABLE->value) {
-                $apartment->update(['status' => ApartmentStatus::RESERVED->value]);
-            }
-
-            if ($apartment->available_at->lt($end)) {
-                $apartment->update(['available_at' => $end->addDay()]);
-            }
-
             if ($reservation_request->status->value !== ReservationStatus::PENDING->value) {
-                throw new Exception(__('errors.unauthorized'));
+                throw new \Exception(__('errors.unauthorized'));
             }
+
+            // ✅ Update availability via service
+            $newAvailability = $this->apartmentAvailabilityService->applyReservation(
+                $apartment,
+                $start,
+                $end
+            );
+
+            $apartment->update([
+                'availability' => $newAvailability,
+            ]);
 
             $reservation = $this->create([
                 'reservation_request_id' => $reservation_request->id,
                 'user_id' => $reservation_request->user_id,
-                'apartment_id' => $reservation_request->apartment_id,
-                'start_date' => $reservation_request->start_date,
-                'end_date' => $reservation_request->end_date,
+                'apartment_id' => $apartment->id,
+                'start_date' => $start,
+                'end_date' => $end,
                 'status' => ReservationStatus::ACTIVE->value,
                 'total_amount' => $total_amount,
             ]);
 
-            Notification::send($reservation_request->user, new ReservationAcceptedNotification($reservation));
+            Notification::send(
+                $reservation_request->user,
+                new ReservationAcceptedNotification($reservation)
+            );
 
-            ReservationRequest::where('id', $reservation_request->id)->update(['status' => ReservationStatus::ACCEPTED->value]);
+            $reservation_request->update([
+                'status' => ReservationStatus::ACCEPTED->value,
+            ]);
 
             $this->reservationConflictService->rejectConflictingRequests(
-                $reservation_request->apartment_id,
-                $reservation_request->start_date,
-                $reservation_request->end_date,
+                $apartment->id,
+                $start,
+                $end,
                 $reservation_request->id
             );
 
@@ -94,5 +108,23 @@ class ReservationService extends CrudService
         Notification::send($reservation_request->user, $reservation_request);
 
         return $reservation_request;
+    }
+
+    public function getMyReservatoins()
+    {
+        $user = Auth::user();
+
+        $reservations = $user->reservations;
+
+        return $reservations;
+    }
+
+    public function getMyApartmentReservations()
+    {
+        $user = Auth::user();
+        $apartmentIds = $user->apartments()->pluck('id');
+
+        return Reservation::whereIn('apartment_id', $apartmentIds)->get();
+
     }
 }

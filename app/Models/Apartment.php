@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Apartment extends BaseModel
 {
     use HasFactory;
+
     protected $fillable = [
         'user_id',
         'title',
@@ -21,7 +22,7 @@ class Apartment extends BaseModel
         'city',
         'address',
         'status',
-        'available_at',
+        'availability',
         'number_of_room',
         'number_of_bathroom',
         'area',
@@ -41,7 +42,7 @@ class Apartment extends BaseModel
 
         'governorate' => Governorate::class,
         'status' => ApartmentStatus::class,
-        'available_at' => 'datetime',
+        'availability' => 'array',
     ];
 
     public function owner()
@@ -68,4 +69,6 @@ class Apartment extends BaseModel
     {
         return $this->hasMany(Reservation::class);
     }
+
+
 }
